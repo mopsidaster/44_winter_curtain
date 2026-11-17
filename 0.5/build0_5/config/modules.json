@@ -1,0 +1,215 @@
+{
+  "slots": {
+    "scope": { "name": "Прицел", "emoji": "🔭" },
+    "grip": { "name": "Рукоять", "emoji": "🖐️" },
+    "muzzle": { "name": "Дуло", "emoji": "🔧" }
+  },
+  "modules": {
+    "коллиматор_х1": {
+      "name": "Коллиматорный х1 точка",
+      "emoji": "🔴",
+      "slot": "scope",
+      "type": "all_wo_shotgun",
+      "price": 200,
+      "accuracy": { "close": 0.10, "medium": 0.05, "far": 0.00 },
+      "headshot_accuracy": 0,
+      "special": null,
+      "description": "Простой коллиматор. Помогает в ближнем бою."
+    },
+    "оптический_х2": {
+      "name": "Оптический х2 точка",
+      "emoji": "🔵",
+      "slot": "scope",
+      "type": "all_wo_shotgun",
+      "price": 350,
+      "accuracy": { "close": 0.10, "medium": 0.10, "far": 0.05 },
+      "headshot_accuracy": 2,
+      "special": null,
+      "description": "Универсальный оптический прицел."
+    },
+    "оптический_х3": {
+      "name": "Оптический х3 галочка",
+      "emoji": "🟡",
+      "slot": "scope",
+      "type": "all_wo_pistol_and_shotgun",
+      "price": 500,
+      "accuracy": { "close": 0.00, "medium": 0.10, "far": 0.12 },
+      "headshot_accuracy": 5,
+      "special": null,
+      "description": "Средний прицел. Не устанавливается на пистолеты и дробовики."
+    },
+    "оптический_х6": {
+      "name": "Оптический х6 снайперская сетка",
+      "emoji": "🟢",
+      "slot": "scope",
+      "type": "sniper",
+      "price": 700,
+      "accuracy": { "close": 0.00, "medium": 0.05, "far": 0.15 },
+      "headshot_accuracy": 15,
+      "special": null,
+      "description": "Снайперский прицел для дальнего боя."
+    },
+    "оптический_х8_12": {
+      "name": "Оптический х8-х12 снайперская сетка",
+      "emoji": "🔵",
+      "slot": "scope",
+      "type": "sniper",
+      "price": 1200,
+      "accuracy": { "close": 0.00, "medium": 0.05, "far": 0.20 },
+      "headshot_accuracy": 30,
+      "special": null,
+      "description": "Мощный снайперский прицел. Максимальная точность на дальней дистанции."
+    },
+    "acog_x4": {
+      "name": "Оптический прицел ACOG x4",
+      "emoji": "🔭",
+      "slot": "scope",
+      "type": "assault",
+      "price": 650,
+      "accuracy": { "close": 0.00, "medium": 0.15, "far": 0.10 },
+      "headshot_accuracy": 8,
+      "special": null,
+      "description": "Американский армейский прицел. Только для автоматов."
+    },
+    "t1_x1": {
+      "name": "Коллиматорный прицел T1 x1",
+      "emoji": "🔴",
+      "slot": "scope",
+      "type": "all_wo_shotgun",
+      "price": 300,
+      "accuracy": { "close": 0.15, "medium": 0.05, "far": 0.00 },
+      "headshot_accuracy": 0,
+      "special": null,
+      "description": "Американский коллиматор. Все, кроме дробовиков."
+    },
+    "эргономичная_рукоять": {
+      "name": "Эргономичная рукоять",
+      "emoji": "🖐️",
+      "slot": "grip",
+      "type": "all_wo_pistol_and_sniper",
+      "price": 400,
+      "accuracy": { "close": 0.10, "medium": 0.05, "far": 0.00 },
+      "special": { "proc_chance": 0.65 },
+      "description": "Удобная рукоять. Бонус точности срабатывает с шансом 65%."
+    },
+    "прямая_рукоять": {
+      "name": "Прямая рукоять",
+      "emoji": "✋",
+      "slot": "grip",
+      "type": "all_wo_pistol_and_sniper",
+      "price": 250,
+      "accuracy": { "close": 0.08, "medium": 0.08, "far": 0.02 },
+      "special": null,
+      "description": "Надёжная рукоять. Небольшой бонус на всех дистанциях."
+    },
+    "эм_стабилизатор": {
+      "name": "Слабый электромагнитный стабилизатор",
+      "emoji": "⚡",
+      "slot": "grip",
+      "type": "assault_smg",
+      "price": 800,
+      "accuracy": { "close": 0.2, "medium": 0.2, "far": 0.2 },
+      "special": null,
+      "description": "Увеличивает точность на +0.2 на всех дистанциях. Только автоматы и ПП."
+    },
+    "пламегаситель": {
+      "name": "Пламегаситель",
+      "emoji": "🔧",
+      "slot": "muzzle",
+      "type": "all",
+      "price": 150,
+      "accuracy": { "close": 0.02, "medium": 0.02, "far": 0.02 },
+      "special": null,
+      "description": "Снижает отдачу. Небольшой бонус на всех дистанциях."
+    },
+    "глушитель": {
+      "name": "Глушитель",
+      "emoji": "🔇",
+      "slot": "muzzle",
+      "type": "all",
+      "price": 550,
+      "accuracy": { "close": 0.08, "medium": 0.08, "far": 0.05 },
+      "special": null,
+      "description": "Снижает звук выстрела. Хороший бонус точности."
+    },
+    "дульный_тормоз": {
+      "name": "Дульный тормоз компенсатор",
+      "emoji": "💨",
+      "slot": "muzzle",
+      "type": "all",
+      "price": 300,
+      "accuracy": { "close": 0.12, "medium": 0.08, "far": 0.02 },
+      "special": null,
+      "description": "Максимальный бонус на ближней дистанции."
+    },
+    "эм_усилитель_ак": {
+      "name": "Слабый электромагнитный усилитель для АК",
+      "emoji": "⚡",
+      "slot": "muzzle",
+      "type": "assault",
+      "allowed_weapons": ["ак_74", "ак_2012", "акм"],
+      "price": 900,
+      "accuracy": { "close": 0.0, "medium": 0.0, "far": 0.0 },
+      "damage_bonus": 2.5,
+      "special": null,
+      "description": "Увеличивает урон на +2.5. Только АК-74, АК-2012, АКМ."
+    },
+    "удлиненный_ствол": {
+      "name": "Удлинённый ствол",
+      "emoji": "📏",
+      "slot": "muzzle",
+      "type": "shotgun_and_assault",
+      "price": 350,
+      "accuracy": { "close": 0.05, "medium": 0.05, "far": 0.05 },
+      "accuracy_by_weapon": {
+        "assault": { "close": 0.05, "medium": 0.05, "far": 0.05 },
+        "shotgun": { "close": 0.08, "medium": 0.08, "far": 0.08 }
+      },
+      "damage_bonus": 1.0,
+      "special": null,
+      "description": "Увеличивает точность: ШВ +5%, Дробовики +8%. Дополнительно +1 к урону оружия. Не для пистолетов и снайперок."
+    },
+    "укороченный_ствол": {
+      "name": "Укороченный ствол",
+      "emoji": "📐",
+      "slot": "muzzle",
+      "type": "shotgun_and_assault",
+      "price": 300,
+      "accuracy": { "close": -0.05, "medium": -0.05, "far": -0.05 },
+      "accuracy_by_weapon": {
+        "assault": { "close": -0.05, "medium": -0.05, "far": -0.05 },
+        "shotgun": { "close": 0.05, "medium": 0.05, "far": 0.05 }
+      },
+      "special": null,
+      "description": "ШВ −5%, Дробовики +5%. Не для пистолетов и снайперок."
+    },
+    "сошки": {
+      "name": "Сошки",
+      "emoji": "🦿",
+      "slots": ["muzzle", "grip"],
+      "slot": "muzzle",
+      "type": "mg_only",
+      "price": 450,
+      "accuracy": { "close": 0.15, "medium": 0.15, "far": 0.15 },
+      "special": { "enemy_hit_bonus": 15 },
+      "description": "Сошки для пулемёта. Занимают дуло и рукоять. +15% точности. Враг получает +15% шанса попасть."
+    },
+    "псо_1_х4": {
+      "name": "Оптический прицел ПСО-1 х4",
+      "emoji": "🔭",
+      "slot": "scope",
+      "type": "sniper",
+      "price": 550,
+      "accuracy": { "close": 0.0, "medium": 0.08, "far": 0.16 },
+      "accuracy_by_weapon": {
+        "sniper": { "close": 0.0, "medium": 0.08, "far": 0.16 }
+      },
+      "headshot_accuracy": 10,
+      "special_weapon_bonus": {
+        "свд": { "close": 0.0, "medium": 0.10, "far": 0.20 }
+      },
+      "special": null,
+      "description": "Оптический прицел ПСО-1. На СВД даёт повышенный бонус."
+    }
+  }
+}

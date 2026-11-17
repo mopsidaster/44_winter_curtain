@@ -1,0 +1,200 @@
+/* ==================== БАЗОВЫЕ СТИЛИ ==================== */
+:root {
+    --term-green: #33ff33;
+    --term-dark: #003300;
+    --term-amber: #ffb000;
+    --term-bg: #050805;
+    --term-red: #ff3333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: #000;
+    color: var(--term-green);
+    font-family: 'Courier New', Courier, monospace;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    background: radial-gradient(circle, #0a1a0a 0%, #000000 120%);
+}
+
+/* Скроллбар */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: rgba(0, 20, 0, 0.5); border-left: 1px solid #1a3a1a; }
+::-webkit-scrollbar-thumb { background: var(--term-green); border: 2px solid #000; border-radius: 2px; box-shadow: 0 0 5px var(--term-green); }
+* { scrollbar-width: thin; scrollbar-color: var(--term-green) rgba(0, 20, 0, 0.5); }
+
+/* CRT Эффект */
+.crt-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 100;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 4px;
+}
+.crt-flicker {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 101;
+    background: rgba(18, 16, 16, 0.1); opacity: 0; animation: flicker 0.15s infinite;
+}
+@keyframes flicker { 0% { opacity: 0.02; } 50% { opacity: 0.05; } 100% { opacity: 0.02; } }
+
+.text-glow { text-shadow: 0 0 5px var(--term-green), 0 0 10px var(--term-green); }
+
+/* Терминал */
+.terminal-container {
+    width: 90%; max-width: 800px; height: 80vh;
+    border: 2px solid #1a3a1a; border-radius: 8px;
+    background-color: rgba(0, 10, 0, 0.85);
+    box-shadow: 0 0 20px rgba(51, 255, 51, 0.2), inset 0 0 40px rgba(0, 0, 0, 0.9);
+    padding: 20px; position: relative; display: flex; flex-direction: column; z-index: 10;
+}
+.terminal-header {
+    display: flex; justify-content: space-between;
+    border-bottom: 1px solid #1a3a1a; padding-bottom: 10px; margin-bottom: 20px;
+    font-size: 0.9em; color: #66cc66;
+}
+.terminal-content {
+    flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column;
+    line-height: 1.4; padding-right: 10px;
+}
+
+/* Анимация загрузки */
+#boot-screen { display: flex; flex-direction: column; gap: 10px; }
+.boot-line { opacity: 0; animation: fadeIn 0.1s forwards; }
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* Интерфейс */
+.screen { display: none; flex-direction: column; gap: 15px; margin-top: 20px; }
+.input-group { display: flex; align-items: center; gap: 10px; }
+input[type="text"], input[type="password"] {
+    background: transparent; border: none; border-bottom: 1px solid var(--term-green);
+    color: var(--term-green); font-family: inherit; font-size: 1.2em; outline: none;
+    padding: 5px; width: 100%; text-shadow: 0 0 5px var(--term-green);
+}
+.cursor {
+    display: inline-block; width: 10px; height: 1.2em;
+    background-color: var(--term-green); animation: blink 1s step-end infinite; vertical-align: bottom;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Кнопки */
+.term-btn {
+    display: inline-block; background: transparent; border: 2px solid var(--term-green);
+    color: var(--term-green); text-decoration: none; padding: 10px 20px; font-size: 1em;
+    font-family: inherit; text-align: center; cursor: pointer; text-transform: uppercase;
+    transition: all 0.3s ease; box-shadow: 0 0 10px rgba(51, 255, 51, 0.2);
+    text-shadow: 0 0 5px var(--term-green); margin-top: 10px;
+}
+.term-btn:hover { background: var(--term-green); color: var(--term-bg); box-shadow: 0 0 20px rgba(51, 255, 51, 0.6); text-shadow: none; }
+.term-btn.danger { border-color: var(--term-red); color: var(--term-red); text-shadow: 0 0 5px var(--term-red); }
+.term-btn.danger:hover { background: var(--term-red); color: var(--term-bg); box-shadow: 0 0 20px rgba(255, 51, 51, 0.6); }
+.term-btn.warning { border-color: var(--term-amber); color: var(--term-amber); text-shadow: 0 0 5px var(--term-amber); }
+.term-btn.warning:hover { background: var(--term-amber); color: var(--term-bg); box-shadow: 0 0 20px rgba(255, 176, 0, 0.6); }
+.term-btn.small { padding: 5px 10px; font-size: 0.9em; margin-top: 0; }
+
+/* Модалки */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8); z-index: 200; justify-content: center; align-items: center;
+}
+.modal-content {
+    width: 90%; max-width: 600px; border: 2px solid var(--term-green); background: var(--term-bg);
+    padding: 20px; box-shadow: 0 0 20px var(--term-green); display: flex; flex-direction: column; max-height: 80vh;
+}
+
+.error-text { color: var(--term-red); text-shadow: 0 0 5px var(--term-red); display: none; }
+.success-text { color: var(--term-green); text-shadow: 0 0 5px var(--term-green); display: none; }
+.warning-text { color: var(--term-amber); text-shadow: 0 0 5px var(--term-amber); }
+
+#secret-lore {
+    display: none; margin-top: 15px; padding: 15px;
+    border: 1px dashed var(--term-amber); background-color: rgba(255, 176, 0, 0.05);
+}
+
+/* Письма */
+.mail-item { border: 1px solid #1a3a1a; padding: 10px; margin-bottom: 10px; background: rgba(0, 50, 0, 0.2); }
+.mail-header { color: var(--term-amber); font-weight: bold; margin-bottom: 5px; }
+.mail-from { font-size: 0.8em; color: #888; }
+
+/* Контакты и чат */
+.contact-list { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; overflow-y: auto; flex-grow: 1; }
+.contact-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; padding: 10px; cursor: pointer; transition: 0.2s; }
+.contact-item:hover { background: rgba(51, 255, 51, 0.1); border-color: var(--term-green); }
+
+.chat-box {
+    display: flex; flex-direction: column; gap: 8px;
+    height: 350px; border: 1px solid #1a3a1a;
+    margin-bottom: 15px; padding: 10px; overflow-y: auto; background: #000;
+}
+.msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 4px; font-size: 0.95em; word-wrap: break-word; line-height: 1.3; }
+.msg-in { background: rgba(51, 255, 51, 0.1); border: 1px solid #1a3a1a; align-self: flex-start; color: var(--term-green); }
+.msg-out { background: rgba(255, 176, 0, 0.1); border: 1px solid #3a2a1a; align-self: flex-end; color: var(--term-amber); }
+.msg-time { font-size: 0.7em; opacity: 0.6; display: block; margin-top: 4px; text-align: right; }
+
+/* Всплывающее уведомление */
+#chat-toast {
+    position: fixed; top: 20px; right: 20px;
+    background: var(--term-bg); border: 2px solid var(--term-green);
+    padding: 15px; box-shadow: 0 0 15px rgba(51, 255, 51, 0.5);
+    color: var(--term-green); font-family: inherit; font-size: 0.9em;
+    transform: translateX(150%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 999; display: flex; align-items: center; gap: 10px;
+}
+#chat-toast.show { transform: translateX(0); }
+
+/* Дополнение для игрового интерфейса */
+.panel {
+    border: 1px solid var(--term-green);
+    padding: 15px;
+    background: rgba(0, 20, 0, 0.4);
+    box-shadow: inset 0 0 10px rgba(51, 255, 51, 0.1);
+}
+
+.panel h3 {
+    color: var(--term-amber);
+    border-bottom: 1px dashed var(--term-amber);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.stat-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+/* Магазин */
+.active-tab {
+    background: var(--term-green) !important;
+    color: var(--term-bg) !important;
+    box-shadow: 0 0 10px var(--term-green);
+}
+
+.shop-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #333;
+    padding: 10px;
+    background: rgba(0, 20, 0, 0.3);
+}
+
+.shop-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.shop-item-name {
+    color: var(--term-amber);
+    font-weight: bold;
+}
+
+.shop-item-desc {
+    font-size: 0.8em;
+    color: #888;
+}

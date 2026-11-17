@@ -1,0 +1,211 @@
+{
+  "factions": {
+    "loners": {
+      "name": "Одиночки",
+      "emoji": "🧍",
+      "description": "Свободные сталкеры. Никому не служат, ищут свой путь в Метро.",
+      "default_relation": "нейтральная",
+      "hostile_to_player_by_default": false,
+      "is_default": true,
+      "leader_npc": null,
+      "stations": [],
+      "relations_to_others": {
+        "bandits": "враждебная",
+        "antiquars": "дружественная",
+        "gess": "нейтральная",
+        "yasenevo": "нейтральная",
+        "gutagi": "нейтральная"
+      },
+      "loyalty_levels": {}
+    },
+    "bandits": {
+      "name": "Бандиты",
+      "emoji": "<:bandits:1557020068154703892>",
+      "emoji_fallback": "🔫",
+      "description": "Мародёры и преступники. Живут за счёт воровства, убийств и лжи.",
+      "default_relation": "враждебная",
+      "hostile_to_player_by_default": true,
+      "is_default": false,
+      "leader_npc": null,
+      "mediator_npc": "посредник_бандитов",
+      "stations": ["профсоюзная", "академическая", "ленинский_проспект", "шаболовская", "нагатинская"],
+      "relations_to_others": {
+        "loners": "враждебная",
+        "antiquars": "враждебная",
+        "gess": "враждебная",
+        "yasenevo": "враждебная",
+        "gutagi": "враждебная"
+      },
+      "loyalty_levels": {
+        "1": {"points": 50, "bonuses": []},
+        "2": {"points": 150, "bonuses": []},
+        "3": {"points": 250, "bonuses": [], "can_join": true},
+        "4": {"points": 350, "bonuses": []},
+        "5": {"points": 500, "bonuses": []}
+      }
+    },
+    "antiquars": {
+      "name": "Антиквары",
+      "emoji": "<:antiquars:1525498683117011107>",
+      "emoji_fallback": "🎩",
+      "description": "Специализируются на продаже редкой электроники и нелегальном сбыте оружия.",
+      "default_relation": "дружественная",
+      "hostile_to_player_by_default": false,
+      "is_default": false,
+      "leader_npc": "дмитрий_борисович",
+      "stations": ["бульвар_дмитрия_донского"],
+      "relations_to_others": {
+        "loners": "дружественная",
+        "bandits": "враждебная",
+        "gess": "нейтральная",
+        "yasenevo": "нейтральная",
+        "gutagi": "нейтральная"
+      },
+      "loyalty_levels": {
+        "1": {"points": 50, "bonuses": [{"type": "unlock_workshop", "description": "Открывается Мастерская"}]},
+        "2": {"points": 150, "bonuses": [{"type": "trade_discount", "value": 5, "description": "Скидка 5%"}]},
+        "3": {"points": 250, "can_join": true, "bonuses": [{"type": "trade_discount", "value": 10, "description": "Скидка 10%"}]},
+        "4": {"points": 350, "bonuses": [{"type": "trade_discount", "value": 15, "description": "Скидка 15%"}]},
+        "5": {"points": 500, "bonuses": [{"type": "trade_discount", "value": 25, "description": "Скидка 25%"}]}
+      }
+    },
+    "gess": {
+      "name": "Севастопольская ГЭС",
+      "emoji": "<:gess:1525498681749667920>",
+      "emoji_fallback": "⚡",
+      "description": "Работяги, содержащие целую ГЭС на средства Гутаги.",
+      "default_relation": "нейтральная",
+      "hostile_to_player_by_default": false,
+      "is_default": false,
+      "leader_npc": "истомин",
+      "stations": ["севастопольская", "каховская", "варшавская"],
+      "relations_to_others": {
+        "loners": "нейтральная",
+        "bandits": "враждебная",
+        "antiquars": "нейтральная",
+        "yasenevo": "дружественная",
+        "gutagi": "дружественная"
+      },
+      "loyalty_levels": {
+        "1": {"points": 50, "bonuses": []},
+        "2": {"points": 150, "bonuses": [{"type": "trade_discount", "value": 5, "description": "Скидка 5%"}]},
+        "3": {"points": 250, "can_join": true, "bonuses": [{"type": "trade_discount", "value": 10, "description": "Скидка 10%"}]},
+        "4": {"points": 350, "bonuses": [{"type": "trade_discount", "value": 15, "description": "Скидка 15%"}]},
+        "5": {"points": 500, "bonuses": [{"type": "trade_discount", "value": 25, "description": "Скидка 25%"}]}
+      }
+    },
+    "yasenevo": {
+      "name": "Ясеневская Община",
+      "emoji": "<:yasenevo:1525498684588953672>",
+      "emoji_fallback": "🏘️",
+      "description": "Обычные люди, борющиеся за выживание. Активно торгуют с Гутагой.",
+      "default_relation": "нейтральная",
+      "hostile_to_player_by_default": false,
+      "is_default": false,
+      "leader_npc": "пепел",
+      "stations": ["битцевский_парк", "новоясеневская", "ясенево", "теплый_стан", "коньково", "беляево", "калужская", "новые_черемушки"],
+      "relations_to_others": {
+        "loners": "нейтральная",
+        "bandits": "враждебная",
+        "antiquars": "нейтральная",
+        "gess": "дружественная",
+        "gutagi": "дружественная"
+      },
+      "loyalty_levels": {
+        "1": {"points": 50, "bonuses": [{"type": "unlock_workshop", "description": "Мастерская"}]},
+        "2": {"points": 150, "bonuses": [{"type": "trade_discount", "value": 5, "description": "Скидка 5%"}]},
+        "3": {"points": 250, "can_join": true, "bonuses": [{"type": "trade_discount", "value": 10, "description": "Скидка 10%"}]},
+        "4": {"points": 350, "bonuses": [{"type": "trade_discount", "value": 15, "description": "Скидка 15%"}]},
+        "5": {"points": 500, "bonuses": [{"type": "trade_discount", "value": 25, "description": "Скидка 25%"}]}
+      }
+    },
+    "gutagi": {
+      "name": "Гутаги",
+      "emoji": "🛡️",
+      "emoji_fallback": "🛡️",
+      "description": "Готландское сообщество (Gutagard). Главная торговая сила Метро.",
+      "default_relation": "нейтральная",
+      "hostile_to_player_by_default": false,
+      "is_default": false,
+      "leader_npc": "прохор_колета",
+      "closed_territory": true,
+      "stations": ["павелецкая_кольцо", "добрынинская", "октябрьская_кольцо", "серпуховская", "тульская"],
+      "relations_to_others": {
+        "loners": "нейтральная",
+        "bandits": "враждебная",
+        "antiquars": "нейтральная",
+        "gess": "дружественная",
+        "yasenevo": "дружественная"
+      },
+      "loyalty_levels": {
+        "1": {"points": 50, "bonuses": []},
+        "2": {"points": 150, "bonuses": [{"type": "trade_discount", "value": 5, "description": "Скидка 5%"}]},
+        "3": {"points": 250, "can_join": true, "bonuses": [{"type": "trade_discount", "value": 10, "description": "Скидка 10%"}]},
+        "4": {"points": 350, "bonuses": [{"type": "trade_discount", "value": 15, "description": "Скидка 15%"}]},
+        "5": {"points": 500, "bonuses": [{"type": "trade_discount", "value": 25, "description": "Скидка 25%"}]}
+      }
+    }
+  },
+
+  "loyalty_thresholds": {
+    "0": 0, "1": 50, "2": 150, "3": 250, "4": 350, "5": 500
+  },
+
+  "relation_types": {
+    "враждебная": {"name": "Враждебная", "emoji": "⚔️", "color": 15158332},
+    "нейтральная": {"name": "Нейтральная", "emoji": "⚖️", "color": 10070709},
+    "дружественная": {"name": "Дружественная", "emoji": "🤝", "color": 3066993}
+  },
+
+  "npcs": {
+    "дмитрий_борисович": {
+      "name": "Дмитрий Борисович", "emoji": "👮",
+      "station": "бульвар_дмитрия_донского",
+      "faction": "antiquars", "role": "leader",
+      "greeting": "Друг, здорово. Что нужно?",
+      "dialog_tree": "antiquars_leader"
+    },
+    "пепел": {
+      "name": "Пепел", "emoji": "🚬",
+      "station": "ясенево", "faction": "yasenevo", "role": "leader",
+      "greeting": "Ну, чего хотел?", "dialog_tree": "yasenevo_leader"
+    },
+    "истомин": {
+      "name": "Истомин", "emoji": "🧑‍🦯",
+      "station": "каховская", "faction": "gess", "role": "leader",
+      "greeting": "Слушаю внимательно. Время — никели.",
+      "dialog_tree": "gess_leader"
+    },
+    "прохор_колета": {
+      "name": "Прохор \"Колета\"", "emoji": "🧔",
+      "station": "добрынинская", "faction": "gutagi", "role": "leader",
+      "greeting": "Чего стоишь? Товар смотришь или дело есть?",
+      "dialog_tree": "gutagi_leader"
+    },
+    "илья_варяг": {
+      "name": "Илья \"Варяг\"", "emoji": "🕵️",
+      "station": "павелецкая_зеленая", "faction": "gutagi", "role": "mediator",
+      "greeting": "Тихо. Слушаю тебя.", "dialog_tree": "gutagi_mediator"
+    },
+    "посредник_бандитов": {
+      "name": "Посредник", "emoji": "🕴️",
+      "station": "новые_черемушки", "faction": "bandits", "role": "mediator",
+      "mediates_for": "bandits",
+      "greeting": "Тихо. Слушаю тебя.", "dialog_tree": "bandits_mediator"
+    },
+    "ганс": {
+      "name": "Ганс", "emoji": "🎩",
+      "station": "павелецкая_кольцо", "faction": "gutagi", "role": "trader",
+      "trader_id": "ганс",
+      "greeting": "Тихо. Товар смотришь или дело есть?",
+      "dialog_tree": "hans_trader"
+    },
+    "радеон": {
+      "name": "Радеон Егорыч", "emoji": "🔧",
+      "station": "каховская", "faction": "gess", "role": "trader",
+      "trader_id": "радеон",
+      "greeting": "Здорово. Инструмент нужен али так, побазарить?",
+      "dialog_tree": "radeon_trader"
+    }
+  }
+}

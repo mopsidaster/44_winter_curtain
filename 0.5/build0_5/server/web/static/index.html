@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090b">
+  <title>44 · WHITE CURTAIN — терминал линии D6</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/map.css">
+</head>
+<body data-density="normal">
+
+<div class="bg" aria-hidden="true">
+  <div class="bg-glow"></div><div class="bg-sweep"></div>
+  <div class="bg-grain"></div><div class="bg-scan"></div><div class="bg-vignette"></div>
+</div>
+
+<section id="auth" class="auth">
+  <div class="auth-card">
+    <div class="sign">
+      <div class="sign-round">44</div>
+      <div class="sign-text"><b>WHITE CURTAIN</b><span>МЕТРО · ЛИНИЯ D6 · ТЕРМИНАЛ</span></div>
+    </div>
+    <div id="lan-box" class="lan-box hidden">
+      <span>Адрес сервера</span><div id="lan-list"></div>
+    </div>
+    <div class="auth-tabs">
+      <button id="tab-login" class="tab active" type="button">Вход</button>
+      <button id="tab-reg" class="tab" type="button">Регистрация</button>
+    </div>
+    <form id="auth-form" autocomplete="on">
+      <label class="fld"><span>Позывной</span>
+        <input id="lg" name="username" autocomplete="username" placeholder="сталкер" required minlength="3"></label>
+      <label class="fld"><span>Пароль</span>
+        <input id="pw" name="password" type="password" autocomplete="current-password" placeholder="••••••" required minlength="6"></label>
+      <label class="fld hidden" id="pin-fld"><span>PIN сервера</span>
+        <input id="pin" type="password" inputmode="numeric" placeholder="выдан хозяином сервера"></label>
+      <div id="auth-err" class="auth-err" role="alert"></div>
+      <button id="auth-go" class="btn success wide" type="submit">Войти в тоннель</button>
+    </form>
+    <p class="auth-note">Первый аккаунт получает права администратора. Ключ доступа — <code>/admin_key permanent</code>. Схема метро открывается кнопкой <b>Схема</b> или клавишей <kbd>M</kbd>.</p>
+  </div>
+</section>
+
+<div id="app" class="app hidden">
+  <header class="top">
+    <div class="sign small">
+      <div class="sign-round">44</div>
+      <div class="sign-text"><b>WHITE CURTAIN</b><span id="station">станция не определена</span></div>
+    </div>
+    <div class="top-mid">
+      <span id="net" class="pill off"><i></i><span id="net-text">нет связи</span></span>
+      <span id="who" class="pill ghost">—</span>
+      <span id="sync" class="pill ghost" title="Синхронизация мира">⇄ <span id="sync-text">0 в сети</span></span>
+      <button id="lan-chip" class="pill ghost btn-copy" type="button" title="Скопировать адрес сервера">🖧 <span id="lan-addr">—</span></button>
+    </div>
+    <div class="top-actions">
+      <button id="map-btn" class="icon-btn" type="button" title="Интерактивная схема (M)">🗺<span>Схема</span></button>
+      <button id="msg-btn" class="icon-btn" type="button" title="Мессенджер">✉<span>Связь</span><em id="msg-count" class="badge hidden">0</em></button>
+      <button id="sound" class="icon-btn on" type="button" title="Звук включён" aria-pressed="true">🔊<span>Звук</span></button>
+      <button id="errors-btn" class="icon-btn" type="button" title="Журнал ошибок">⚠<span>Журнал</span><em id="err-count" class="badge hidden">0</em></button>
+      <button id="reconnect" class="icon-btn" type="button" title="Переподключить">⟳<span>Связь</span></button>
+      <button id="logout" class="icon-btn" type="button" title="Выйти">⏻<span>Выход</span></button>
+    </div>
+  </header>
+
+  <aside class="rail">
+    <section class="panel">
+      <h3>Состояние</h3>
+      <div id="vitals" class="vitals">
+        <div class="vital" data-k="hp"><label>❤️ Здоровье</label><div class="bar"><i style="width:0%"></i></div><span>—</span></div>
+        <div class="vital" data-k="st"><label>🏃 Выносливость</label><div class="bar"><i style="width:0%"></i></div><span>—</span></div>
+        <div class="vital" data-k="rad"><label>☢️ Радиация</label><div class="bar"><i style="width:0%"></i></div><span>—</span></div>
+        <div class="vital" data-k="filter"><label>🫧 Фильтр</label><div class="bar"><i style="width:0%"></i></div><span>—</span></div>
+      </div>
+      <dl class="kv">
+        <div><dt>Фракция</dt><dd id="v-faction">—</dd></div>
+        <div><dt>Никели</dt><dd id="v-money">—</dd></div>
+        <div><dt>Уровень</dt><dd id="v-level">—</dd></div>
+      </dl>
+    </section>
+    <section class="panel">
+      <h3>В сети <em id="online-count" class="tag">0</em></h3>
+      <div id="online-list" class="online"><div class="empty">Никого нет рядом</div></div>
+      <div id="nearby-box" class="nearby hidden"><b>На твоей станции:</b><span id="nearby-names"></span></div>
+    </section>
+    <section class="panel">
+      <h3>Быстрые команды</h3>
+      <div class="quick">
+        <button data-cmd="menu">🎮 Меню</button>
+        <button data-open-map>🗺 Схема</button>
+        <button data-cmd="status">📊 Статус</button>
+        <button data-cmd="faction">🏴 Фракции</button>
+        <button data-cmd="leaderboard">🏆 Топ</button>
+        <button data-cmd="start">🌆 Старт</button>
+      </div>
+      <button id="force-refresh" class="btn tiny secondary wide mt" type="button">⟳ Обновить экран</button>
+    </section>
+    <section class="panel">
+      <h3>Вид терминала</h3>
+      <div class="ctrl">
+        <label class="ctrl-row"><span>Шрифт</span><input id="set-font" type="range" min="13" max="19" step="1"><b id="set-font-v">15</b></label>
+        <label class="ctrl-row"><span>Плотность</span>
+          <select id="set-density"><option value="compact">плотная</option><option value="normal">обычная</option><option value="wide">свободная</option></select></label>
+        <label class="ctrl-row switch"><span>Сканлайны</span><input id="set-scan" type="checkbox"><i></i></label>
+        <label class="ctrl-row switch"><span>Зерно плёнки</span><input id="set-grain" type="checkbox"><i></i></label>
+        <label class="ctrl-row switch"><span>Анимации</span><input id="set-motion" type="checkbox"><i></i></label>
+        <label class="ctrl-row switch"><span>Гул тоннеля</span><input id="set-amb" type="checkbox"><i></i></label>
+        <label class="ctrl-row switch"><span>Звуки действий</span><input id="set-sfx" type="checkbox"><i></i></label>
+        <label class="ctrl-row switch"><span>Автообновление</span><input id="set-autoref" type="checkbox"><i></i></label>
+        <div class="ctrl-row"><button id="set-reset" class="btn tiny secondary" type="button">Сбросить вид</button>
+          <button id="feed-clear" class="btn tiny secondary" type="button">Очистить ленту</button></div>
+      </div>
+    </section>
+  </aside>
+
+  <main id="feed" class="feed" tabindex="0"></main>
+
+  <footer class="cmd">
+    <div class="cmd-line">
+      <span class="caret">/</span>
+      <input id="cmd" placeholder="menu · move · brigada new · admin_key permanent" autocomplete="off" spellcheck="false">
+      <button id="cmd-send" class="btn primary" type="button">Отправить</button>
+    </div>
+    <div id="ac" class="ac hidden" role="listbox"></div>
+    <div class="hints">
+      <span><kbd>/</kbd> команда</span><span><kbd>↑</kbd><kbd>↓</kbd> история</span>
+      <span><kbd>Tab</kbd> дополнить</span><span><kbd>Ctrl</kbd>+<kbd>M</kbd> мессенджер</span><span><kbd>Esc</kbd> закрыть</span>
+    </div>
+  </footer>
+</div>
+
+<!-- МЕССЕНДЖЕР -->
+<aside id="msg" class="drawer wide hidden" aria-label="Мессенджер">
+  <div class="drawer-bar">
+    <h3>Связь</h3>
+    <div class="msg-tabs">
+      <button class="mtab active" data-tab="chats" type="button">Диалоги <em id="tab-dm" class="badge inline hidden">0</em></button>
+      <button class="mtab" data-tab="contacts" type="button">Контакты <em id="tab-req" class="badge inline hidden">0</em></button>
+      <button class="mtab" data-tab="mail" type="button">Почта <em id="tab-mail" class="badge inline hidden">0</em></button>
+    </div>
+    <button id="msg-x" class="modal-x" type="button" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="msg-body">
+    <div id="msg-list" class="msg-list"></div>
+    <div id="msg-thread" class="msg-thread hidden">
+      <div class="thread-head">
+        <button id="thread-back" class="btn tiny secondary" type="button">←</button>
+        <b id="thread-name">—</b><span id="thread-state" class="tag">—</span>
+        <button id="thread-block" class="btn tiny danger" type="button">Блок</button>
+      </div>
+      <div id="thread-body" class="thread-body"></div>
+      <div id="thread-typing" class="typing hidden">печатает…</div>
+      <form id="thread-form" class="thread-form">
+        <textarea id="thread-input" rows="2" placeholder="Сообщение… (Ctrl+Enter — отправить)" maxlength="2000"></textarea>
+        <button class="btn success" type="submit">➤</button>
+      </form>
+    </div>
+  </div>
+  <div id="msg-compose" class="msg-compose hidden">
+    <form id="mail-form">
+      <label class="fld"><span>Кому (позывной)</span><input id="mail-to" list="directory" required></label>
+      <label class="fld"><span>Тема</span><input id="mail-subject" maxlength="120" placeholder="Депеша"></label>
+      <label class="fld"><span>Текст</span><textarea id="mail-body" rows="4" maxlength="2000" required></textarea></label>
+      <div class="row"><button class="btn success" type="submit">Отправить письмо</button>
+        <button id="mail-cancel" class="btn secondary" type="button">Отмена</button></div>
+    </form>
+  </div>
+  <div class="msg-foot">
+    <form id="add-contact" class="add-contact">
+      <input id="contact-login" list="directory" placeholder="Позывной игрока" required>
+      <button class="btn tiny primary" type="submit">+ Контакт</button>
+    </form>
+    <button id="new-mail" class="btn tiny secondary" type="button">✉ Письмо</button>
+    <button id="msg-refresh" class="btn tiny secondary" type="button">⟳</button>
+  </div>
+  <datalist id="directory"></datalist>
+</aside>
+
+<div id="modal-root" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <form id="modal" class="modal">
+    <div class="modal-bar"><i></i><i></i><i></i><h2 id="modal-title">Ввод</h2>
+      <button id="modal-x" class="modal-x" type="button" aria-label="Закрыть">✕</button></div>
+    <div id="modal-fields" class="modal-body"></div>
+    <div class="modal-foot">
+      <button id="modal-ok" class="btn success" type="submit">Подтвердить</button>
+      <button id="modal-cancel" class="btn secondary" type="button">Отмена</button>
+    </div>
+  </form>
+</div>
+
+<aside id="drawer" class="drawer hidden" aria-label="Журнал ошибок">
+  <div class="drawer-bar"><h3>Журнал ошибок</h3>
+    <button id="err-copy" class="btn tiny secondary" type="button">Копировать всё</button>
+    <button id="err-clear" class="btn tiny secondary" type="button">Очистить</button>
+    <button id="drawer-x" class="modal-x" type="button" aria-label="Закрыть">✕</button></div>
+  <div id="err-list" class="drawer-body"></div>
+</aside>
+
+<!-- ══════════ ИНТЕРАКТИВНАЯ СХЕМА МЕТРО ══════════ -->
+<div id="mapx" class="mapx hidden">
+  <div class="mapx-grain"></div>
+  <div class="mapx-top">
+    <div class="mapx-brand"><i>D6</i><div><b>WHITE CURTAIN</b><span>ЛИНИЯ D6 · СХЕМА МЕТРО</span></div></div>
+    <div class="mapx-search">
+      <input id="map-q" type="text" placeholder="Поиск станции…" autocomplete="off">
+      <div id="map-ac" class="mapx-ac hidden"></div>
+    </div>
+    <div class="mapx-topbtns">
+      <button class="mbtn" id="map-here" type="button">Я здесь</button>
+      <button class="mbtn" id="map-fit" type="button">Вписать</button>
+      <button class="mbtn" id="map-reload" type="button">Данные</button>
+      <button class="mbtn" id="map-export" type="button">PNG</button>
+      <button class="mbtn danger" id="map-close" type="button">Закрыть</button>
+    </div>
+  </div>
+  <aside class="mapx-rail">
+    <div class="mpanel">
+      <h4>Линии</h4>
+      <div id="map-lines" class="legend-lines"></div>
+      <h4>Легенда</h4>
+      <div class="legend-keys">
+        <span><i class="k trade"></i>торговля</span>
+        <span><i class="k npc"></i>NPC</span>
+        <span><i class="k doctor"></i>медик</span>
+        <span><i class="k workshop"></i>мастерская</span>
+        <span><i class="k campfire"></i>костёр</span>
+        <span><i class="k start"></i>старт</span>
+        <span><i class="k me"></i>ты здесь</span>
+        <span><i class="k other"></i>другие</span>
+      </div>
+    </div>
+    <div class="mpanel">
+      <h4>Вид</h4>
+      <label class="mrow"><span>Масштаб</span><input id="m-zoom" type="range" min="0.2" max="3.2" step="0.05"><b id="m-zoom-v">1.00</b></label>
+      <label class="mrow"><span>Узлы</span><input id="m-node" type="range" min="0.3" max="2.4" step="0.05"><b id="m-node-v">1.00</b></label>
+      <label class="mrow"><span>Линии</span><input id="m-line" type="range" min="1" max="16" step="1"><b id="m-line-v">7</b></label>
+      <label class="mrow"><span>Свечение</span><input id="m-glow" type="range" min="0" max="24" step="1"><b id="m-glow-v">12</b></label>
+      <label class="mrow"><span>Туман</span><input id="m-fog" type="range" min="0" max="1" step="0.05"><b id="m-fog-v">0.30</b></label>
+      <label class="mrow"><span>Скорость</span><input id="m-speed" type="range" min="0" max="3" step="0.05"><b id="m-speed-v">1.00</b></label>
+      <label class="mrow"><span>Подписи</span>
+        <select id="m-labels"><option value="all">все</option><option value="smart">умно</option><option value="key">ключевые</option><option value="none">нет</option></select>
+      </label>
+      <label class="mrow"><span>Тема</span>
+        <select id="m-theme"><option value="tunnel">тоннель</option><option value="radio">радио</option><option value="night">ночь</option></select>
+      </label>
+      <label class="mrow sw"><span>Фракции</span><input id="m-terr" type="checkbox"><i></i></label>
+      <label class="mrow sw"><span>Радиация</span><input id="m-rad" type="checkbox"><i></i></label>
+      <label class="mrow sw"><span>Техтоннели</span><input id="m-tech" type="checkbox"><i></i></label>
+      <label class="mrow sw"><span>Поверхность</span><input id="m-surf" type="checkbox"><i></i></label>
+      <label class="mrow sw"><span>Опасность</span><input id="m-danger" type="checkbox"><i></i></label>
+      <label class="mrow sw"><span>Сетка</span><input id="m-grid" type="checkbox"><i></i></label>
+      <label class="mrow sw"><span>Игроки</span><input id="m-players" type="checkbox"><i></i></label>
+      <div class="mrow btns"><button class="mbtn" id="m-reset" type="button">Сброс</button></div>
+    </div>
+  </aside>
+  <canvas id="map-canvas"></canvas>
+  <div id="map-tip" class="mapx-tip hidden"></div>
+  <aside class="mapx-dossier hidden" id="map-dossier">
+    <div class="dos-head">
+      <span id="dos-line" class="dos-line">—</span>
+      <button class="mbtn tiny" id="dos-x" type="button">✕</button>
+    </div>
+    <h3 id="dos-name">—</h3>
+    <div id="dos-tags" class="dos-tags"></div>
+    <p id="dos-desc" class="dos-desc"></p>
+    <div class="dos-meters">
+      <div class="meter"><b>Опасность</b><span id="dos-danger-v">0</span><div class="mbar danger"><i id="dos-danger"></i></div></div>
+      <div class="meter"><b>Радиация</b><span id="dos-rad-v">0</span><div class="mbar rad"><i id="dos-rad"></i></div></div>
+    </div>
+    <dl id="dos-kv" class="dos-kv"></dl>
+    <div class="dos-sec">Переходы</div>
+    <div id="dos-links" class="dos-links"></div>
+    <div class="dos-actions">
+      <button class="mbtn" id="dos-route" type="button">Маршрут</button>
+      <button class="mbtn go" id="dos-go" type="button">Идти сюда</button>
+    </div>
+  </aside>
+  <footer class="mapx-route">
+    <div class="route-head">
+      <b id="route-title">Маршрут не выбран</b>
+      <span id="route-meta" class="route-meta">кликни станцию на схеме</span>
+      <div class="route-btns">
+        <button class="mbtn go" id="route-start" type="button" disabled>▶ В путь</button>
+        <button class="mbtn danger hidden" id="route-stop" type="button">■ Стоп</button>
+        <button class="mbtn" id="route-clear" type="button" disabled>Очистить</button>
+      </div>
+    </div>
+    <div class="route-progress"><i id="route-bar"></i></div>
+    <div id="route-chips" class="route-chips"></div>
+    <div id="route-log" class="route-log"></div>
+  </footer>
+  <div id="map-load" class="mapx-load hidden"></div>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script src="/static/app.js"></script>
+<script src="/static/msg.js"></script>
+<script src="/static/map.js"></script>
+</body>
+</html>

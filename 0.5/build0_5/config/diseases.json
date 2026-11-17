@@ -1,0 +1,98 @@
+{
+  "radiation": {
+    "name": "Радиационное заражение",
+    "emoji": "☢️",
+    "max": 100,
+    "threshold": 50,
+    "disease_id": "лучевая_болезнь",
+    "decay_on_safe": 1.0,
+    "decay_on_safe_to_safe": 1.0,
+    "description": "Накапливается от радиации. Свыше 50 — шанс лучевой болезни."
+  },
+  "chemical": {
+    "name": "Химическое заражение",
+    "emoji": "☣️",
+    "max": 100,
+    "threshold": 25,
+    "disease_id": "хим_отравление",
+    "decay_on_safe": 1.0,
+    "decay_on_safe_to_safe": 1.0,
+    "description": "Накапливается от газов. Свыше 25 — химическое отравление."
+  },
+  "cold": {
+    "name": "Замерзание",
+    "emoji": "❄️",
+    "max": 100,
+    "threshold": 25,
+    "disease_id": "простуда",
+    "delay_transitions": 2,
+    "base_chance": 35,
+    "description": "Накапливается от холода. Свыше 25 — через 2 перехода шанс заболеть простудой."
+  },
+
+  "diseases": {
+    "лучевая_болезнь": {
+      "name": "Лучевая болезнь",
+      "emoji": "🧬",
+      "damage_per_transition": 10,
+      "damage_zones": ["голова", "торс", "руки", "ноги"],
+      "curable": false,
+      "cure_cost": 0,
+      "description": "Неизлечимая болезнь. Каждый переход — 10 урона по всем частям тела."
+    },
+    "хим_отравление": {
+      "name": "Химическое отравление",
+      "emoji": "🤢",
+      "damage_per_transition": 5,
+      "damage_zones": ["голова", "торс", "руки", "ноги"],
+      "curable": true,
+      "cure_cost": 300,
+      "description": "Отравление от химии. Каждый переход — 5 урона. Лечится у Врача за 300 никелей."
+    },
+    "обморожение": {
+      "name": "Обморожение",
+      "emoji": "🥶",
+      "damage_per_transition": 0,
+      "damage_zones": [],
+      "curable": false,
+      "cure_cost": 0,
+      "description": "Лечится только согревом у костра. Урон наносится в cold_system."
+    },
+    "простуда": {
+      "name": "Простуда",
+      "emoji": "🤧",
+      "damage_per_transition": 0,
+      "damage_zones": [],
+      "curable": true,
+      "cure_cost": 100,
+      "stamina_penalty_per_move": 2.5,
+      "enemy_spawn_bonus_percent": 10,
+      "melee_damage_penalty_percent": 25,
+      "accuracy_penalty_percent": 15,
+      "auto_cure_danger_transitions": 15,
+      "auto_cure_safe_transitions": 30,
+      "description": "Появляется при холоде > 25. Через 2 перехода шанс заболеть 35%. Штраф к стамине, шансу врагов, рукопашной и меткости. Проходит сама через 15 опасных / 30 безопасных переходов. Лечится таблетками в Аптеке."
+    },
+    "заражение_крови": {
+      "name": "Заражение крови",
+      "emoji": "🩸",
+      "damage_per_transition": 2,
+      "damage_zones": ["голова", "торс", "руки", "ноги"],
+      "curable": true,
+      "cure_cost": 500,
+      "stamina_penalty_per_move": 3,
+      "melee_damage_penalty_percent": 35,
+      "accuracy_penalty_percent": 25,
+      "soft_penalty_transitions": 15,
+      "soft_stamina_penalty": 2,
+      "soft_melee_damage_penalty_percent": 15,
+      "soft_accuracy_penalty_percent": 5,
+      "description": "Появляется после боя, если выбили руку или ногу. Штраф к стамине, рукопашной, меткости. Лечится у Врача за 500 никелей, затем 15 переходов сниженных дебаффов."
+    }
+  },
+
+  "immunity": {
+    "health_skill_reduction_per_level": 5,
+    "description": "Каждый уровень навыка Здоровье снижает шанс заболеть на 5%"
+  }
+}

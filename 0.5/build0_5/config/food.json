@@ -1,0 +1,59 @@
+{
+  "foods": {
+    "мясо_крысы": {
+      "name": "Мясо крысы",
+      "stamina": 1,
+      "price": 5,
+      "emoji": "🥩",
+      "can_cook": true,
+      "cooked": "жареное_мясо_крысы"
+    },
+    "жареное_мясо_крысы": {
+      "name": "Жареное мясо крысы",
+      "stamina": 2,
+      "price": 10,
+      "emoji": "🍖",
+      "can_cook": false
+    },
+    "съедобные_грибы": {
+      "name": "Съедобные грибы",
+      "stamina": 2,
+      "price": 8,
+      "emoji": "🍄",
+      "can_cook": true,
+      "cooked": "жареные_грибы_с_мясом"
+    },
+    "жареные_грибы_с_мясом": {
+      "name": "Жареные грибы с крысиным мясом",
+      "stamina": 3,
+      "price": 15,
+      "emoji": "🍲",
+      "can_cook": false
+    },
+    "чайный_гриб": {
+      "name": "Чайный гриб",
+      "stamina": 2.5,
+      "price": 12,
+      "emoji": "🍄",
+      "can_cook": false,
+      "chemical_reduction": 2,
+      "cold_reduction": 2,
+      "description": "Освежающий напиток. +2.5 стамины, -2 химии, -2 холода."
+    },
+    "кусок_свинины": {
+      "name": "Кусок свинины",
+      "stamina": 2,
+      "price": 12,
+      "emoji": "🥩",
+      "can_cook": true,
+      "cooked": "жареный_кусок_свинины"
+    },
+    "жареный_кусок_свинины": {
+      "name": "Жареный кусок свинины",
+      "stamina": 4,
+      "price": 20,
+      "emoji": "🍖",
+      "can_cook": false
+    }
+  }
+}

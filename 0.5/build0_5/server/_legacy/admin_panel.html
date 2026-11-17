@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M44 // Панель Управления (ADMIN ONLY)</title>
+  <style>
+    :root {
+        --term-green: #33ff33;
+        --term-bg: #050805;
+        --term-red: #ff3333;
+        --term-amber: #ffb000;
+    }
+    body {
+        background-color: #0a0a0a;
+        color: var(--term-green);
+        font-family: 'Courier New', Courier, monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 40px;
+    }
+    .panel {
+        width: 100%;
+        max-width: 600px;
+        border: 2px solid var(--term-amber);
+        background: rgba(20, 10, 0, 0.8);
+        padding: 20px;
+        box-shadow: 0 0 20px rgba(255, 176, 0, 0.2);
+    }
+    h2 { color: var(--term-amber); text-align: center; margin-top: 0; }
+    .input-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+    label { font-size: 0.9em; color: #888; }
+    input, textarea {
+        background: transparent;
+        border: 1px solid #333;
+        color: #fff;
+        padding: 10px;
+        font-family: inherit;
+        outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--term-amber); }
+    textarea { resize: vertical; min-height: 100px; }
+    button {
+        background: transparent;
+        border: 2px solid var(--term-amber);
+        color: var(--term-amber);
+        padding: 10px 20px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        width: 100%;
+        transition: all 0.3s;
+    }
+    button:hover { background: var(--term-amber); color: #000; }
+    .status { margin-top: 15px; text-align: center; color: var(--term-green); font-size: 0.9em; }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <h2>АДМИН-ПАНЕЛЬ M44</h2>
+
+  <div class="input-group">
+    <label>Кому (Логин получателя):</label>
+    <input type="text" id="targetUser" placeholder="Введите логин игрока (например: stalker1)" required>
+  </div>
+
+  <div class="input-group">
+    <label>Тема письма:</label>
+    <input type="text" id="mailSubject" placeholder="Например: Приказ командования" required>
+  </div>
+
+  <div class="input-group">
+    <label>Текст письма:</label>
+    <textarea id="mailBody" placeholder="Введите текст сообщения..." required></textarea>
+  </div>
+
+  <button onclick="sendMail()">ОТПРАВИТЬ УВЕДОМЛЕНИЕ</button>
+
+  <div class="status" id="statusMsg"></div>
+</div>
+
+<script>
+  function sendMail() {
+      const target = document.getElementById('targetUser').value.trim().toLowerCase();
+      const subject = document.getElementById('mailSubject').value.trim();
+      const body = document.getElementById('mailBody').value.trim();
+      const statusMsg = document.getElementById('statusMsg');
+
+      if (!target || !subject || !body) {
+          statusMsg.style.color = 'red';
+          statusMsg.textContent = 'ОШИБКА: Заполните все поля!';
+          return;
+      }
+
+      // Формируем объект письма
+      const mailData = {
+          from: "Администрация M44",
+          subject: subject,
+          body: body,
+          timestamp: new Date().toLocaleString()
+      };
+
+      // Читаем текущую базу писем (или создаем новую)
+      let allMails = JSON.parse(localStorage.getItem('m44_mailbox')) || {};
+
+      // Добавляем письмо для конкретного пользователя
+      if (!allMails[target]) {
+          allMails[target] = [];
+      }
+      allMails[target].push(mailData);
+
+      // Сохраняем обратно
+      localStorage.setItem('m44_mailbox', JSON.stringify(allMails));
+
+      statusMsg.style.color = '#33ff33';
+      statusMsg.textContent = `УСПЕХ: Письмо для "${target}" отправлено!`;
+
+      // Очищаем поля
+      document.getElementById('mailSubject').value = '';
+      document.getElementById('mailBody').value = '';
+  }
+</script>
+</body>
+</html>

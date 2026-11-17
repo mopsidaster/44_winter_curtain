@@ -1,0 +1,607 @@
+{
+  "_comment_mutation_0476": "0.4.7.6: Уровень Мутации (УМ0..УМ5) применяется поверх базовых статов. См. balance.json → mutation. Флаг enabled отключает всю механику.",
+
+  "mutants": {
+    "крыса": {
+      "name": "Крыса",
+      "emoji": "🐀",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": true,
+      "description": "Обычная крыса-мутант.",
+      "base_health": 2.0,
+      "health_per_danger": 0.3,
+      "base_damage_min": 0.3,
+      "base_damage_max": 0.8,
+      "damage_per_danger": 0.1,
+      "hit_chance_base": 40,
+      "hit_chance_per_danger": 3,
+      "min_danger": 0,
+      "max_danger": 2,
+      "spawn_weight": 5,
+      "is_boss": false,
+      "body_parts": {
+        "голова": { "hp": 1, "multiplier": 2.5 },
+        "торс": { "hp": 2, "multiplier": 1.2 },
+        "руки": { "hp": 1, "multiplier": 0.7 },
+        "ноги": { "hp": 1, "multiplier": 0.7 }
+      },
+      "loot": {
+        "мясо_крысы": { "chance": 80, "min": 1, "max": 2 }
+      },
+      "xp_min": 2,
+      "xp_max": 5,
+      "nickels_min": 1,
+      "nickels_max": 3,
+      "attack_texts": [
+        "Крыса вцепилась в {part}",
+        "Крыса укусила за {part}"
+      ]
+    },
+    "упырь": {
+      "name": "Упырь",
+      "emoji": "🧟",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": true,
+      "description": "Самый распространённый мутант.",
+      "base_health": 6.0,
+      "health_per_danger": 1.0,
+      "base_damage_min": 1.0,
+      "base_damage_max": 1.8,
+      "damage_per_danger": 0.2,
+      "hit_chance_base": 55,
+      "hit_chance_per_danger": 5,
+      "min_danger": 1,
+      "max_danger": 4,
+      "spawn_weight": 4,
+      "is_boss": false,
+      "body_parts": {
+        "голова": { "hp": 3, "multiplier": 2.5 },
+        "торс": { "hp": 6, "multiplier": 1.2 },
+        "руки": { "hp": 4, "multiplier": 0.7 },
+        "ноги": { "hp": 4, "multiplier": 0.7 }
+      },
+      "loot": {
+        "хвост_упыря": { "chance": 50, "min": 1, "max": 1 }
+      },
+      "xp_min": 8,
+      "xp_max": 15,
+      "nickels_min": 3,
+      "nickels_max": 8,
+      "attack_texts": [
+        "Упырь вцепился в {part}",
+        "Упырь нанёс удар когтями в {part}"
+      ]
+    },
+    "носач": {
+      "name": "Носач",
+      "emoji": "🐗",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": true,
+      "description": "Самка упыря.",
+      "base_health": 10.0,
+      "health_per_danger": 1.5,
+      "base_damage_min": 1.8,
+      "base_damage_max": 2.8,
+      "damage_per_danger": 0.3,
+      "hit_chance_base": 50,
+      "hit_chance_per_danger": 5,
+      "min_danger": 2,
+      "max_danger": 5,
+      "spawn_weight": 2,
+      "is_boss": false,
+      "body_parts": {
+        "голова": { "hp": 4, "multiplier": 2.5 },
+        "торс": { "hp": 8, "multiplier": 1.2 },
+        "руки": { "hp": 5, "multiplier": 0.7 },
+        "ноги": { "hp": 5, "multiplier": 0.7 }
+      },
+      "loot": {
+        "клык_носача": { "chance": 40, "min": 1, "max": 2 },
+        "хвост_упыря": { "chance": 30, "min": 1, "max": 1 }
+      },
+      "xp_min": 15,
+      "xp_max": 25,
+      "nickels_min": 8,
+      "nickels_max": 15,
+      "attack_texts": [
+        "Носач оглушил инфразвуком и ударил в {part}",
+        "Носач нанёс удар когтями в {part}"
+      ]
+    },
+    "кикимора": {
+      "name": "Кикимора",
+      "emoji": "🐈",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": true,
+      "description": "Мутант-падальщик.",
+      "base_health": 5.0,
+      "health_per_danger": 0.8,
+      "base_damage_min": 0.8,
+      "base_damage_max": 1.5,
+      "damage_per_danger": 0.2,
+      "hit_chance_base": 60,
+      "hit_chance_per_danger": 4,
+      "min_danger": 1,
+      "max_danger": 3,
+      "spawn_weight": 3,
+      "is_boss": false,
+      "body_parts": {
+        "голова": { "hp": 2, "multiplier": 2.5 },
+        "торс": { "hp": 4, "multiplier": 1.2 },
+        "руки": { "hp": 3, "multiplier": 0.7 },
+        "ноги": { "hp": 3, "multiplier": 0.7 }
+      },
+      "loot": {
+        "когти_кикиморы": { "chance": 60, "min": 1, "max": 2 },
+        "хвост_кикиморы": { "chance": 30, "min": 1, "max": 1 }
+      },
+      "xp_min": 10,
+      "xp_max": 18,
+      "nickels_min": 5,
+      "nickels_max": 10,
+      "attack_texts": [
+        "Кикимора прыгнула и вцепилась в {part}",
+        "Кикимора нанесла удар когтями по {part}"
+      ]
+    },
+    "жукопаук": {
+      "name": "Жукопаук",
+      "emoji": "🕷️",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": true,
+      "description": "Хитиновый мутант с бронёй.",
+      "base_health": 18.0,
+      "health_per_danger": 0.0,
+      "base_damage_min": 2.0,
+      "base_damage_max": 3.5,
+      "damage_per_danger": 0.3,
+      "hit_chance_base": 55,
+      "hit_chance_per_danger": 4,
+      "min_danger": 4,
+      "max_danger": 5,
+      "spawn_weight": 3,
+      "is_boss": false,
+      "always_count": 3,
+      "armor_protection": 50,
+      "head_immunity": true,
+      "body_parts": {
+        "голова": { "hp": 2, "multiplier": 2.5 },
+        "торс": { "hp": 10, "multiplier": 1.2 },
+        "руки": { "hp": 3, "multiplier": 0.7 },
+        "ноги": { "hp": 3, "multiplier": 0.7 }
+      },
+      "loot": {
+        "чешуя_червя": { "chance": 60, "min": 1, "max": 2 },
+        "хлам": { "chance": 40, "min": 1, "max": 1 }
+      },
+      "xp_min": 20,
+      "xp_max": 35,
+      "nickels_min": 10,
+      "nickels_max": 20,
+      "attack_texts": [
+        "Жукопаук вцепился в {part}",
+        "Жукопаук ударил хитиновой лапой в {part}"
+      ]
+    },
+    "бандит": {
+      "name": "Бандит",
+      "emoji": "🔫",
+      "is_human": true,
+      "is_mutant": false,
+      "can_mutate": false,
+      "description": "Вооружённый человек. С шансом 50% носит Комплект Бандита.",
+      "base_health": 30.0,
+      "health_per_danger": 0.0,
+      "base_damage_min": 1.5,
+      "base_damage_max": 2.5,
+      "damage_per_danger": 0.1,
+      "hit_chance_base": 60,
+      "hit_chance_per_danger": 4,
+      "min_danger": 1,
+      "max_danger": 3,
+      "spawn_weight": 3,
+      "is_boss": false,
+      "weapons": ["пистолет_макарова", "револьвер_44"],
+      "armor_choices": [
+        {"armor": "броня_доходяги", "helmet": "шапка_доходяги", "chance": 50},
+        {"armor": "бандит_броня", "helmet": "бандит_шапка", "chance": 50}
+      ],
+      "body_parts": {
+        "голова": { "hp": 5, "multiplier": 2.5 },
+        "торс": { "hp": 10, "multiplier": 1.2 },
+        "руки": { "hp": 7.5, "multiplier": 0.7 },
+        "ноги": { "hp": 7.5, "multiplier": 0.7 }
+      },
+      "loot": {
+        "патроны": { "chance": 70, "min": 3, "max": 10 },
+        "никели": { "chance": 90, "min": 10, "max": 30 },
+        "аптечка": { "chance": 30, "min": 1, "max": 1 }
+      },
+      "weapon_drop": {
+        "weapon": { "chance": 40, "min": 1, "max": 1 },
+        "magazine": { "chance": 50, "min": 1, "max": 1 },
+        "ammo": { "chance": 80, "min": 3, "max": 10 }
+      },
+      "xp_min": 12,
+      "xp_max": 20,
+      "nickels_min": 10,
+      "nickels_max": 30,
+      "attack_texts": [
+        "Бандит выстрелил в {part}",
+        "Бандит попал в {part}"
+      ]
+    },
+
+    "_comment_boss_044": "Босс Рейдер и его носачи",
+    "рейдер": {
+      "name": "Рейдер",
+      "emoji": "☠️",
+      "is_human": true,
+      "is_mutant": false,
+      "is_boss": true,
+      "can_mutate": false,
+      "description": "Элитный боец. Опасен на всех дистанциях.",
+      "base_health": 40.0,
+      "base_damage_min": 3.5,
+      "base_damage_max": 5.5,
+      "damage_per_danger": 0.3,
+      "hit_chance_base": 70,
+      "hit_chance_per_danger": 3,
+      "min_danger": 1,
+      "max_danger": 5,
+      "spawn_weight": 1,
+      "body_parts": {
+        "голова": { "hp": 8, "multiplier": 2.5 },
+        "торс": { "hp": 14, "multiplier": 1.2 },
+        "руки": { "hp": 9, "multiplier": 0.7 },
+        "ноги": { "hp": 9, "multiplier": 0.7 }
+      },
+      "loot": {
+        "жетон_рейдера": { "chance": 100, "min": 1, "max": 1 }
+      },
+      "xp_min": 80,
+      "xp_max": 120,
+      "nickels_min": 50,
+      "nickels_max": 100,
+      "attack_texts": [
+        "Рейдер выстрелил в {part}",
+        "Рейдер нанёс точный удар в {part}"
+      ]
+    },
+    "носач_рафик": {
+      "name": "Носач «Рафик»",
+      "emoji": "🐗",
+      "is_human": false,
+      "is_mutant": true,
+      "is_boss": true,
+      "can_mutate": false,
+      "description": "Ручной носач Рейдера. Верный и опасный.",
+      "base_health": 10.0,
+      "base_damage_min": 1.8,
+      "base_damage_max": 2.8,
+      "damage_per_danger": 0.3,
+      "hit_chance_base": 50,
+      "hit_chance_per_danger": 5,
+      "min_danger": 1,
+      "max_danger": 5,
+      "body_parts": {
+        "голова": { "hp": 4, "multiplier": 2.5 },
+        "торс": { "hp": 8, "multiplier": 1.2 },
+        "руки": { "hp": 5, "multiplier": 0.7 },
+        "ноги": { "hp": 5, "multiplier": 0.7 }
+      },
+      "loot": {
+        "лапа_рафика": { "chance": 40, "min": 1, "max": 1 }
+      },
+      "xp_min": 25,
+      "xp_max": 40,
+      "nickels_min": 15,
+      "nickels_max": 30,
+      "attack_texts": [
+        "Носач «Рафик» вцепился в {part}",
+        "Носач «Рафик» ударил в {part}"
+      ]
+    },
+    "носач_жуля": {
+      "name": "Носач «Жуля»",
+      "emoji": "🐗",
+      "is_human": false,
+      "is_mutant": true,
+      "is_boss": true,
+      "can_mutate": false,
+      "description": "Ручной носач Рейдера.",
+      "base_health": 10.0,
+      "base_damage_min": 1.8,
+      "base_damage_max": 2.8,
+      "damage_per_danger": 0.3,
+      "hit_chance_base": 50,
+      "hit_chance_per_danger": 5,
+      "min_danger": 1,
+      "max_danger": 5,
+      "body_parts": {
+        "голова": { "hp": 4, "multiplier": 2.5 },
+        "торс": { "hp": 8, "multiplier": 1.2 },
+        "руки": { "hp": 5, "multiplier": 0.7 },
+        "ноги": { "hp": 5, "multiplier": 0.7 }
+      },
+      "loot": {
+        "глаз_жули": { "chance": 35, "min": 1, "max": 1 }
+      },
+      "xp_min": 25,
+      "xp_max": 40,
+      "nickels_min": 15,
+      "nickels_max": 30,
+      "attack_texts": [
+        "Носач «Жуля» вцепился в {part}",
+        "Носач «Жуля» ударил в {part}"
+      ]
+    },
+
+    "_comment_merzlyaki_047": "Белая Мгла: Мерзляки. spawn_weight = 0 (только через forced_enemy_ids)",
+    "мерзляк_вождь": {
+      "name": "Мерзляк-Вождь",
+      "emoji": "🐺",
+      "is_human": false,
+      "is_mutant": true,
+      "is_boss": true,
+      "can_mutate": false,
+      "boss_type": "merzlyak_leader",
+      "description": "Предводитель стаи.",
+      "base_health": 60.0,
+      "health_per_danger": 0.0,
+      "base_damage_min": 8.5,
+      "base_damage_max": 12.0,
+      "damage_per_danger": 0.0,
+      "hit_chance_base": 65,
+      "hit_chance_per_danger": 0,
+      "min_danger": 5,
+      "max_danger": 5,
+      "spawn_weight": 0,
+      "armor_protection": 70,
+      "pistol_immunity": true,
+      "melee_immunity": true,
+      "knife_damage_immunity": true,
+      "knife_head_kill_chance": 5,
+      "knife_head_kill_skill_bonus": 0.5,
+      "always_companions": ["мерзляк", "мерзляк_охотник"],
+      "always_companions_count": 2,
+      "body_parts": {
+        "голова": { "hp": 10, "multiplier": 2.5 },
+        "торс": { "hp": 20, "multiplier": 1.2 },
+        "руки": { "hp": 15, "multiplier": 0.7 },
+        "ноги": { "hp": 15, "multiplier": 0.7 }
+      },
+      "attack_texts": [
+        "Вождь нанес удар длинющими когтями по {part}!",
+        "Вождь совершил рывок и вцепился в {part}!",
+        "Вождь нанес серию ударов лапами и прогрыз {part}"
+      ],
+      "loot": {
+        "шкура_мерзляка_вождя": { "chance": 100, "min": 1, "max": 1 }
+      },
+      "xp_min": 100,
+      "xp_max": 150,
+      "nickels_min": 50,
+      "nickels_max": 100
+    },
+    "_comment_demon_0488": "0.4.8.5: Демон — босс поверхности (только forced_enemy_ids)",
+    "демон": {
+      "name": "Демон",
+      "emoji": "🦅",
+      "is_human": false,
+      "is_mutant": true,
+      "is_boss": true,
+      "can_mutate": false,
+      "boss_type": "surface_boss",
+      "description": "Мутировавшая птица, издавна пугающая всех, кто рискнет выйти на поверхность.",
+      "base_health": 85.0,
+      "health_per_danger": 0.0,
+      "base_damage_min": 8.0,
+      "base_damage_max": 15.0,
+      "damage_per_danger": 0.0,
+      "hit_chance_base": 65,
+      "hit_chance_per_danger": 0,
+      "min_danger": 5,
+      "max_danger": 5,
+      "spawn_weight": 0,
+      "armor_protection": 25,
+      "pistol_immunity": true,
+      "melee_immunity": true,
+      "knife_damage_immunity": true,
+      "body_parts": {
+        "голова": {"hp": 15, "multiplier": 2.5},
+        "торс": {"hp": 30, "multiplier": 1.2},
+        "руки": {"hp": 20, "multiplier": 0.7},
+        "ноги": {"hp": 20, "multiplier": 0.7}
+      },
+      "attack_texts": [
+        "Демон спикировал на {player_name}, повредив ему {part}!",
+        "Демон подлетел и нанес серию ударов по {part}!",
+        "Демон пролетел за спину {player_name} и схватил {part}!",
+        "Демон махнул крылом и сбил {player_name} с ног, повредив {part}!",
+        "Демон схватил {player_name} и поднялся вверх! {player_name} вырвался и упал с высоты около 3 метров, повредив {part}!",
+        "Демон схватил {player_name} и поднялся вверх! {player_name} вырвался и упал с высоты около 5 метров, повредив {part}!",
+        "Демон схватил {player_name} и поднялся вверх! {player_name} вырвался и упал с высоты около 8 метров, повредив {part}!",
+        "Демон пролетел над {player_name} и задел его когтями за {part}!"
+      ],
+      "loot": {
+        "клык_демона": {"chance": 100, "min": 1, "max": 1}
+      },
+      "xp_min": 80,
+      "xp_max": 120,
+      "nickels_min": 50,
+      "nickels_max": 100
+    },
+    "мерзляк_охотник": {
+      "name": "Мерзляк-Охотник",
+      "emoji": "🐺",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": false,
+      "description": "Добытчик стаи. Быстрый и хитрый.",
+      "base_health": 35.0,
+      "health_per_danger": 0.0,
+      "base_damage_min": 8.0,
+      "base_damage_max": 12.0,
+      "damage_per_danger": 0.0,
+      "hit_chance_base": 60,
+      "hit_chance_per_danger": 0,
+      "min_danger": 5,
+      "max_danger": 5,
+      "spawn_weight": 0,
+      "armor_protection": 40,
+      "pistol_immunity": true,
+      "knife_accuracy_penalty": 0.5,
+      "melee_accuracy_penalty": 0.5,
+      "body_parts": {
+        "голова": { "hp": 10, "multiplier": 2.5 },
+        "торс": { "hp": 10, "multiplier": 1.2 },
+        "руки": { "hp": 7.5, "multiplier": 0.7 },
+        "ноги": { "hp": 7.5, "multiplier": 0.7 }
+      },
+      "attack_texts": [
+        "Охотник напал с фланга!",
+        "Охотник нанес хлесткий удар лапой по {part}!",
+        "Охотник проскочил перед вами и отгрыз {part}!",
+        "Охотник напал с тыла и вцепился в {part}!"
+      ],
+      "loot": {
+        "шкура_мерзляка": { "chance": 60, "min": 1, "max": 2 }
+      },
+      "xp_min": 40,
+      "xp_max": 60,
+      "nickels_min": 15,
+      "nickels_max": 35
+    },
+    "мерзляк": {
+      "name": "Мерзляк",
+      "emoji": "🐺",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": false,
+      "description": "Обыкновенная тварь. Опасна в стае.",
+      "base_health": 45.0,
+      "health_per_danger": 0.0,
+      "base_damage_min": 7.0,
+      "base_damage_max": 8.0,
+      "damage_per_danger": 0.0,
+      "hit_chance_base": 55,
+      "hit_chance_per_danger": 0,
+      "min_danger": 5,
+      "max_danger": 5,
+      "spawn_weight": 0,
+      "armor_protection": 50,
+      "pistol_immunity": true,
+      "knife_accuracy_penalty": 0.666,
+      "melee_accuracy_penalty": 0.666,
+      "body_parts": {
+        "голова": { "hp": 12, "multiplier": 2.5 },
+        "торс": { "hp": 15, "multiplier": 1.2 },
+        "руки": { "hp": 9, "multiplier": 0.7 },
+        "ноги": { "hp": 9, "multiplier": 0.7 }
+      },
+      "attack_texts": [
+        "Мерзляк ударил лапой в {part}!",
+        "Мерзляк бросился на вас, повредив {part}!"
+      ],
+      "loot": {
+        "шкура_мерзляка": { "chance": 50, "min": 1, "max": 1 }
+      },
+      "xp_min": 30,
+      "xp_max": 45,
+      "nickels_min": 10,
+      "nickels_max": 25
+    },
+    "_comment_strazh_047": "Белая Мгла: Страж. spawn_weight = 0.",
+    "страж": {
+      "name": "Страж",
+      "emoji": "🐕",
+      "is_human": false,
+      "is_mutant": true,
+      "can_mutate": false,
+      "description": "Мутировавшее четвероногое.",
+      "base_health": 35.0,
+      "health_per_danger": 0.5,
+      "base_damage_min": 4.0,
+      "base_damage_max": 6.5,
+      "damage_per_danger": 0.2,
+      "hit_chance_base": 60,
+      "hit_chance_per_danger": 4,
+      "min_danger": 4,
+      "max_danger": 5,
+      "spawn_weight": 0,
+      "body_parts": {
+        "голова": { "hp": 8, "multiplier": 2.5 },
+        "торс": { "hp": 10, "multiplier": 1.2 },
+        "руки": { "hp": 8.5, "multiplier": 0.7 },
+        "ноги": { "hp": 8.5, "multiplier": 0.7 }
+      },
+      "attack_texts": [
+        "Страж прыгнул и вцепился в {part}",
+        "Страж нанёс удар когтями в {part}",
+        "Страж сбил вас с ног и укусил за {part}"
+      ],
+      "loot": {
+        "шкура_стража": { "chance": 50, "min": 1, "max": 1 },
+        "клык_стража": { "chance": 35, "min": 1, "max": 1 }
+      },
+      "xp_min": 20,
+      "xp_max": 35,
+      "nickels_min": 10,
+      "nickels_max": 25
+    }
+  },
+
+  "loot_items": {
+    "мясо_крысы": {"name": "Мясо крысы", "emoji": "🥩", "price": 6},
+    "хвост_упыря": {"name": "Хвост упыря", "emoji": "🐾", "price": 15},
+    "клык_носача": {"name": "Клык носача", "emoji": "🦷", "price": 25},
+    "когти_кикиморы": {"name": "Когти кикиморы", "emoji": "🦷", "price": 12},
+    "хвост_кикиморы": {"name": "Хвост кикиморы", "emoji": "🐾", "price": 10},
+    "чешуя_червя": {"name": "Чешуя червя", "emoji": "🛡️", "price": 18},
+    "хлам": {"name": "Хлам", "emoji": "📦", "price": 1},
+    "жетон_рейдера": {"name": "Жетон Рейдера", "emoji": "🎖️", "price": 750},
+    "лапа_рафика": {"name": "Лапа «Рафика» с браслетом", "emoji": "🐾", "price": 250},
+    "глаз_жули": {"name": "Глаз «Жули»", "emoji": "👁️", "price": 500},
+    "шкура_мерзляка": {"name": "Шкура мерзляка", "emoji": "🐾", "price": 30},
+    "шкура_мерзляка_вождя": {"name": "Шкура Вождя мерзляков", "emoji": "🐾", "price": 250},
+    "шкура_стража": {"name": "Шкура стража", "emoji": "🧥", "price": 20},
+    "клык_стража": {"name": "Клык стража", "emoji": "🦷", "price": 18},
+    "клык_демона": {"name": "Клык демона", "emoji": "🦷", "price": 1250},
+    "артефакт_ледышка": {"name": "Артефакт «Ледышка»", "emoji": "💠", "price": 200},
+    "артефакт_скрежет": {"name": "Артефакт «Скрежет»", "emoji": "💎", "price": 250}
+  },
+
+  "mutant_waves": {
+    "легкая": {"mutants": ["крыса", "упырь"], "count_min": 1, "count_max": 3},
+    "средняя": {"mutants": ["упырь", "кикимора"], "count_min": 2, "count_max": 3},
+    "тяжелая": {"mutants": ["носач"], "count_min": 1, "count_max": 2}
+  },
+
+  "spawn": {
+    "safe_stations_chance": 2,
+    "danger_stations_chance": 20,
+    "ruined_stations_chance": 35,
+    "technical_tunnel_chance": 30,
+    "campfire_danger_chance": 25,
+    "event_wave_multiplier": 1.5,
+    "max_enemies_by_danger": {
+      "1": 1,
+      "2": 2,
+      "3": 2,
+      "4": 3,
+      "5": 3
+    },
+    "boss_raider_chance_on_hostile": 5,
+    "surface_station_chance": 60,
+    "surface_boss_chance": 15,
+    "surface_companions": ["мерзляк_охотник", "мерзляк", "мерзляк"],
+    "strazh_surface_chance": 40,
+    "strazh_danger_chance": 15
+  }
+}

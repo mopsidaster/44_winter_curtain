@@ -1,0 +1,380 @@
+{
+  "player": {
+    "revive_lives": 6.0,
+    "base_stamina": 10.0,
+    "stamina_per_move": 0.5,
+    "stamina_from_food": 2.0,
+    "start_food": 3,
+    "start_gold": 250,
+    "start_ammo": 10
+  },
+  "items": {
+    "food_price": 10,
+    "medkit_price": 50,
+    "medkit_podsumok_price": 150,
+    "antirad_price": 100,
+    "doctor_chem_cure_price": 300,
+    "ammo_price": 20,
+    "ammo_max_purchase": 300,
+    "filter_price": 30,
+    "repair_price": 60
+  },
+  "skills": {
+    "start_points": 10,
+    "max_level": 10,
+    "strength_hunt_bonus": 3,
+    "accuracy_base": 40,
+    "accuracy_per_level": 4,
+    "headshot_accuracy_base": 20,
+    "headshot_accuracy_per_level": 3,
+    "endurance_base": 10,
+    "endurance_per_level": 1,
+    "toughness_per_level": 10,
+    "toughness_fall_chance_reduction": 5,
+    "health_per_level": 2,
+    "strength_melee_damage_percent": 1,
+    "strength_accuracy_bonus": 2,
+    "strength_stun_bonus": 1,
+    "accuracy_ranged_percent": 2,
+    "accuracy_headshot_percent": 3,
+    "endurance_stamina_bonus": 2,
+    "toughness_block_percent": 2,
+    "toughness_fall_reduction": 10,
+    "toughness_damage_reduction_percent": 2.5,
+    "health_body_hp_bonus": 1,
+    "health_immunity_percent": 5,
+    "engineering_repair_bonus_per_level": 5,
+    "engineering_max_level": 10
+  },
+  "distance": {
+    "close": {"name": "Близко", "modifier": 1.0, "enemy_damage_mult": 1.5, "enemy_hit_chance_mult": 1.2},
+    "medium": {"name": "Средняя", "modifier": 0.75, "enemy_damage_mult": 1.0, "enemy_hit_chance_mult": 1.0},
+    "far": {"name": "Далеко", "modifier": 0.50, "enemy_damage_mult": 0.6, "enemy_hit_chance_mult": 0.7}
+  },
+  "shotgun": {
+    "distance_damage_mult": {"close": 1.0, "medium": 0.6667, "far": 0.0},
+    "far_blocked": true,
+    "far_unlock_ammo": "пулевой"
+  },
+  "gas_mask": {
+    "max_durability": 25,
+    "worn_durability": 15,
+    "filter_durability": 1.0,
+    "filter_cost_per_move": 0.5,
+    "radiation_damage": 0.5
+  },
+  "party": {"xp_bonus_multiplier": 1.15},
+  "xp_on_surface_multiplier": 1.5,
+  "nickels": {
+    "combat_multiplier": 1.25,
+    "boss_multiplier": 1.5
+  },
+  "sniper_subtypes": {
+    "semi-auto": {"name": "Самозарядная", "second_shot_chance": 50, "second_shot_accuracy_penalty": 0.15, "description": "50% шанс второго выстрела"},
+    "bolt-action": {"name": "Магазинная", "second_shot_chance": 0, "second_shot_accuracy_penalty": 0.0, "description": "Обычная снайперская винтовка"}
+  },
+  "factions": {
+    "loyalty_max": 500,
+    "loyalty_loss_per_kill": 50,
+    "loyalty_gain_per_task_default": 15,
+    "task_board_refresh_hours": 3,
+    "default_faction": "loners",
+    "relation_shift": {
+      "kill_member": -50,
+      "spare_member": 10,
+      "help_member": 5
+    },
+    "tasks": {
+      "count_per_board": 3,
+      "loyalty_base_min": 10,
+      "loyalty_base_max": 25,
+      "nickels_base_min": 30,
+      "nickels_base_max": 80,
+      "kill_targets": ["крыса", "упырь", "носач", "кикимора", "мерзляк", "страж"],
+      "kill_count_min": 2,
+      "kill_count_max": 5,
+      "gather_items": ["шкура_мерзляка", "клык_носача", "хвост_упыря", "чешуя_червя"],
+      "gather_count_min": 2,
+      "gather_count_max": 4,
+      "pay_money_min": 100,
+      "pay_money_max": 500
+    }
+  },
+  "independent_traders": {
+    "loyalty_thresholds": {"0": 0, "1": 100, "2": 200},
+    "hans_loot_sell_multiplier": 2.0,
+    "radeon_junk_sell_bonus_percent": 20,
+    "task_board_refresh_hours": 3,
+    "tasks": {
+      "count_per_board": 3,
+      "loyalty_base_min": 5,
+      "loyalty_base_max": 15,
+      "nickels_base_min": 20,
+      "nickels_base_max": 60,
+      "gather_items": ["шкура_мерзляка", "клык_носача", "хвост_упыря", "чешуя_червя"],
+      "gather_count_min": 1,
+      "gather_count_max": 3,
+      "delivery_reward_min": 100,
+      "delivery_reward_max": 300
+    }
+  },
+  "mutation": {
+    "enabled": true,
+    "max_level": 5,
+    "levels": {
+      "0": {"damage_bonus": 0, "health_multiplier": 1.00},
+      "1": {"damage_bonus": 2, "health_multiplier": 1.25},
+      "2": {"damage_bonus": 2, "health_multiplier": 1.25},
+      "3": {"damage_bonus": 4, "health_multiplier": 1.25},
+      "4": {"damage_bonus": 4, "health_multiplier": 1.25},
+      "5": {"damage_bonus": 4, "health_multiplier": 1.50}
+    },
+    "chances_by_danger": {
+      "0": [100, 0, 0, 0, 0, 0],
+      "1": [98, 2, 0, 0, 0, 0],
+      "2": [92, 6, 2, 0, 0, 0],
+      "3": [82, 12, 5, 1, 0, 0],
+      "4": [65, 18, 10, 5, 2, 0],
+      "5": [50, 22, 15, 8, 4, 1]
+    },
+    "max_level_by_danger": {"0": 0, "1": 0, "2": 1, "3": 2, "4": 4, "5": 5},
+    "xp_bonus_per_level": 25,
+    "nickels_bonus_per_level": 25
+  },
+  "repair": {
+    "base_success_chance": 45,
+    "engineering_bonus_per_level": 5,
+    "tape_restore_amount": 5,
+    "repair_workshop_cost_multiplier": 1.0,
+    "repair_armor_workshop_chance": 100
+  },
+  "combat": {
+    "hit_chance_base": 50,
+    "mutant_xp_min": 10,
+    "mutant_xp_max": 25,
+    "enemy_headshot_chance": 10,
+    "enemy_body_priorities": {"торс": 60, "руки": 15, "ноги": 15, "голова": 10},
+    "distance_change_enemy_attack_chance": 35,
+    "max_enemies_default": 1,
+    "multi_enemy_chance_base": 30,
+    "burst_fire_single_target": true,
+    "burst_fire_split_targets": true,
+    "mg": {
+      "shots_per_action": 3,
+      "close_penalty": 0.6,
+      "heavy_enemy_hit_bonus": 15,
+      "soshki_enemy_hit_bonus": 15,
+      "heavy_reload_turns": 2
+    }
+  },
+  "human_combat": {
+    "arms_destroyed_no_damage": true,
+    "legs_destroyed_min_accuracy": 10,
+    "surrender_chance_legs_destroyed": 50,
+    "enemy_flee_chance_legs_destroyed": 30
+  },
+  "throwables": {
+    "grenade_self_damage_mult": 1.0,
+    "grenade_self_hits_zone": "торс",
+    "smg_burst_count": 4,
+    "mg_burst_count": 3
+  },
+  "healing": {
+    "in_combat_allowed": true,
+    "enemy_use_threshold": 0.5,
+    "enemy_use_chance": 40,
+    "bandit_medkits": ["аптечка_аи2"],
+    "raider_medkits": ["тактическая_аптечка", "тактическая_аптечка"]
+  },
+  "incendiary": {"damage_per_tick": 1.0, "turns_per_stack": 2, "stacks": true},
+  "bleeding": {
+    "weak_turns": 2,
+    "strong_turns": 4,
+    "damage_per_tick": 1.0,
+    "sources": {
+      "mutant_claws": {"weak_chance": 40, "strong_chance": 10},
+      "expansive_ammo": {"weak_chance": 35, "strong_chance": 15},
+      "melee_sharp": {"weak_chance": 45, "strong_chance": 20}
+    }
+  },
+  "transition_events": {
+    "safe": {
+      "mushrooms": {"chance": 6, "food": 1},
+      "cache": {"chance": 10, "medkit": 1},
+      "ammo": {"chance": 15, "ammo": 3},
+      "nothing": {"chance": 69}
+    },
+    "mixed": {
+      "roar": {"chance": 20},
+      "stumble": {"chance": 30, "mask_damage": 1},
+      "nothing": {"chance": 50}
+    },
+    "danger": {
+      "mutant": {"chance": 30},
+      "explosion": {"chance": 5, "life_damage": 3.0, "mask_damage": 3},
+      "nothing": {"chance": 65}
+    }
+  },
+  "raider_raid": {
+    "stations": ["нагатинская", "нагорная", "нахимовский_проспект", "севастопольская", "чертановская", "южная"],
+    "duration": 15,
+    "spawn_chance_on_raid_station": 100
+  },
+  "chemical_cloud": {
+    "duration": 25,
+    "chemical_damage_per_transition": 25,
+    "target_danger_min": 4,
+    "target_danger_max": 5
+  },
+  "heating_failure": {
+    "duration": 25,
+    "cold_damage_per_transition": 25
+  },
+  "cold_sickness": {
+    "cold_threshold": 25,
+    "delay_transitions": 2,
+    "base_chance": 35,
+    "stamina_penalty_per_move": 2.5,
+    "enemy_spawn_bonus_percent": 10,
+    "melee_damage_penalty_percent": 25,
+    "accuracy_penalty_percent": 15,
+    "auto_cure_danger_transitions": 15,
+    "auto_cure_safe_transitions": 30
+  },
+  "blood_infection": {
+    "stamina_penalty_per_move": 3,
+    "damage_per_transition": 2,
+    "melee_damage_penalty_percent": 35,
+    "accuracy_penalty_percent": 25,
+    "cure_price": 500,
+    "soft_penalty_transitions": 15,
+    "soft_stamina_penalty": 2,
+    "soft_melee_damage_penalty_percent": 15,
+    "soft_accuracy_penalty_percent": 5
+  },
+  "prices": {
+    "weapon": {
+      "пистолет_макарова": 75, "гш_18": 125, "револьвер_44": 300,
+      "тт_33": 250, "glock_17": 450,
+      "пп_19_витязь": 700, "пп_91_кедр": 450, "mp5": 850,
+      "урод": 300, "ак_74": 500, "ак_2012": 1200, "акс_74у": 400,
+      "скс": 700, "вск_94": 950, "9а_91": 850, "осв_96": 2000,
+      "гп_25": 1100, "дробитель": 1000, "дуплет": 450, "иж_17": 250,
+      "сайга_12": 1400, "кс_23": 1500, "мурка_133": 1000,
+      "ргд_5": 250, "ф_1": 300,
+      "кустарный_метательный_нож": 100, "боевой_метательный_нож": 200,
+      "дп_27": 1250, "винтовка_мосина": 900, "вентиль": 1200,
+      "свд": 1400, "асвк_д": 1750, "акм": 700, "рпд": 1400,
+      "lr_300": 1550, "m16a1": 1100
+    },
+    "magazine": {
+      "магазин_пм_8": 30, "магазин_пм_16": 50,
+      "магазин_гш18_10": 60, "магазин_гш18_18": 100,
+      "магазин_тт_8": 40,
+      "магазин_глок_15": 80, "магазин_глок_21": 130,
+      "магазин_пп19_20": 90, "магазин_пп19_30": 140,
+      "магазин_пп91_30": 120,
+      "магазин_мп5_20": 90, "магазин_мп5_30": 140, "магазин_мп5_50": 220,
+      "магазин_урод_15": 60, "магазин_урод_30": 100,
+      "магазин_ак74_20": 80, "магазин_ак74_30": 120, "магазин_ак74_45": 180,
+      "магазин_ак2012_40": 200, "магазин_ак2012_50": 250,
+      "магазин_ар_20": 100, "магазин_ар_30": 150, "магазин_ар_45": 210,
+      "магазин_вск_20": 150, "магазин_9а91_30": 200,
+      "магазин_осв_5": 300,
+      "барабан_44_6": 100,
+      "барабан_дробитель_3": 80, "барабан_дробитель_6": 140, "барабан_дробитель_9": 200,
+      "магазин_сайга_5": 100, "магазин_сайга_10": 180, "барабан_сайга_20": 350,
+      "диск_дп27_47": 220,
+      "магазин_вентиль_5": 100, "магазин_вентиль_10": 180,
+      "магазин_свд_5": 150, "магазин_свд_10": 250,
+      "магазин_скс_10": 120, "магазин_скс_20": 200,
+      "магазин_акм_20": 90, "магазин_акм_30": 130, "магазин_акм_45": 190,
+      "барабан_рпд_100": 400
+    },
+    "ammo": {
+      "9x18": {"оболочечные": 5, "экспансивные": 15},
+      "9x19": {"оболочечные": 6, "экспансивные": 16, "бронебойно_экспансивные": 30},
+      ".44 Магнум": {"оболочечные": 10, "экспансивные": 20, "трассеры": 12},
+      "5.45x39": {"оболочечные": 5, "экспансивные": 15, "бронебойные": 20, "трассеры": 18},
+      "5.56x45": {"оболочечные": 7, "экспансивные": 18, "бронебойные": 22, "трассеры": 20},
+      "7.62x25": {"оболочечные": 6, "бронебойные": 15, "бронебойно_экспансивные": 25},
+      "9x39": {"оболочечные": 15, "бронебойные": 25},
+      "12.7x108": {"оболочечные": 50, "бронебойные": 65},
+      "12x70": {"картечь": 25, "пулевой": 40, "зажигательный": 35},
+      "23x75": {"картечь": 45, "пулевой": 70},
+      "40 мм": {"оф_граната": 350},
+      "7.62x54R": {"оболочечные": 18, "бронебойные": 32, "бронебойно_экспансивные": 40},
+      "7.62x39": {"оболочечные": 8, "бронебойные": 20, "трассеры": 16}
+    },
+    "food": {
+      "мясо_крысы": 6, "жареное_мясо_крысы": 12,
+      "съедобные_грибы": 10, "жареные_грибы_с_мясом": 18,
+      "чайный_гриб": 12, "кусок_свинины": 15, "жареный_кусок_свинины": 25
+    },
+    "filter": {"поврежденный": 30, "поношенный": 60, "нетронутый": 100, "усиленный": 160},
+    "medkit": 50,
+    "repair": 60
+  },
+  "armor": {
+    "durability_loss_per_hit": 0.1,
+    "min_durability_for_protection": 1.0,
+    "repair_enabled": true,
+    "ricochet_damage_mult": 0.0
+  },
+  "diseases": {
+    "config_file": "diseases.json",
+    "radiation_on_radiation_damage": 1.0,
+    "chemical_on_gas_leak": 1.0
+  },
+  "spec_weapons": {
+    "гп_25": {"type": "grenade_launcher", "ammo_id": "оф_граната", "base_damage": 16.0, "close_block": true, "medium_accuracy_min": 25, "medium_accuracy_max": 50, "far_accuracy_min": 50, "far_accuracy_max": 75, "group_cover_chance": 35}
+  },
+  "optics": {"close_penalty_per_zoom": 12.5, "min_zoom_for_penalty": 3},
+  "gas_leak": {"damage_per_transition": 5.0, "requires_full_rxbz_set": true, "set_id": "сет_рхбз"},
+  "cold": {
+    "max": 100,
+    "frostbite_threshold": 75,
+    "frostbite_chance_per_point": 1.0,
+    "frostbite_damage_per_turn": 10,
+    "cold_per_transition_no_protection": 25,
+    "cold_per_transition_zone_enter": 25,
+    "cold_at_event_start": 25,
+    "warm_up_per_campfire": 5
+  },
+  "campfire": {"warm_up_stamina_bonus": 2.0},
+  "bosses": {
+    "raider": {
+      "name": "Рейдер", "emoji": "☠️", "spawn_chance_on_hostile": 15, "total_health": 40,
+      "body_parts": {"голова": {"hp": 8, "multiplier": 2.5}, "торс": {"hp": 14, "multiplier": 1.2}, "руки": {"hp": 9, "multiplier": 0.7}, "ноги": {"hp": 9, "multiplier": 0.7}},
+      "weapons_choices": [
+        {"weapon": "вск_94", "ammo_type": "бронебойные", "modules": {"scope": "оптический_х2"}},
+        {"weapon": "дробитель", "ammo_type": "картечь", "magazine": "барабан_дробитель_6"},
+        {"weapon": "скс", "ammo_type": "трассеры", "magazine": "магазин_скс_20"}
+      ],
+      "armor_choices": ["броня_юг", "кузнец_броня"], "helmet_choices": ["шлем_юг", "кузнец_шлем"],
+      "loadouts": [{"armor": "броня_юг", "helmet": "шлем_юг"}, {"armor": "кузнец_броня", "helmet": "кузнец_шлем"}],
+      "hit_chance_base": 70, "hit_chance_per_danger": 3, "damage_min": 3.5, "damage_max": 5.5,
+      "companions": ["носач_рафик", "носач_жуля"],
+      "unique_drop": "жетон_рейдера", "unique_drop_chance": 100
+    },
+    "носач_рафик": {"name": "Носач «Рафик»", "emoji": "🐗", "unique_drop": "лапа_рафика", "unique_drop_chance": 40},
+    "носач_жуля": {"name": "Носач «Жуля»", "emoji": "🐗", "unique_drop": "глаз_жули", "unique_drop_chance": 35}
+  },
+  "surface": {
+    "radiation_per_transition": 5.0,
+    "radiation_per_transition_no_mask": 10.0,
+    "cold_by_danger": {"0": 0, "1": 0, "2": 0, "3": 5, "4": 15, "5": 25},
+    "surface_combat_chance": 25
+  },
+  "quests": {
+    "surface": {
+      "id": "на_поверхность",
+      "name": "На поверхность!",
+      "giver": "дмитрий_борисович",
+      "faction": "antiquars",
+      "level_required": 3,
+      "requires": {"шкура_мерзляка": 5},
+      "rewards": {"nickels": 1500, "xp": 500, "armor": ["бутовский_странник_броня", "бутовский_странник_шлем"], "items": {"тактическая_аптечка": 5}}
+    }
+  }
+}

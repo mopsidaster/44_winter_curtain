@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>44: Winter Curtain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="crt-overlay"></div><div class="crt-flicker"></div>
+
+<!-- ЭКРАН АВТОРИЗАЦИИ -->
+<div id="login-screen" class="terminal-container" style="display: flex;">
+    <div class="terminal-header"><span>DOS-OS</span><span>SECURE LINE</span><span>M44</span></div>
+    <div class="terminal-content" style="justify-content: center; align-items: center;">
+        <div id="login-form" style="width: 100%; max-width: 400px;">
+            <h2 class="text-glow" style="text-align: center; margin-bottom: 20px;">ВХОД В СЕТЬ</h2>
+            <div class="input-group"><span>> ЛОГИН:</span><input type="text" id="auth-user"></div>
+            <div class="input-group"><span>> ПАРОЛЬ:</span><input type="password" id="auth-pass"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="term-btn" style="flex:1" onclick="login()">ВОЙТИ</button>
+                <button class="term-btn warning" style="flex:1" onclick="register()">РЕГИСТРАЦИЯ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ЭКРАН СОЗДАНИЯ ПЕРСОНАЖА -->
+<div id="create-screen" class="terminal-container" style="display: none;">
+    <div class="terminal-header"><span>ПРОЛОГ</span><span>M44</span></div>
+    <div class="terminal-content" style="justify-content: center; align-items: center;">
+        <div style="width: 100%; max-width: 500px;">
+            <p class="text-glow" style="margin-bottom: 20px; line-height: 1.6;">*Вы просыпаетесь в бункере. Человек в плаще смотрит на вас.*<br>— Как тебя звать, бродяга?</p>
+            <div class="input-group"><span>> ИМЯ:</span><input type="text" id="char-name" placeholder="Позывной"></div>
+            <div class="input-group"><span>> ОТКУДА:</span><input type="text" id="char-origin" placeholder="Станция"></div>
+            <h3 class="warning-text" style="margin-top: 20px;">НАВЫКИ</h3>
+            <div id="skills-menu" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ГЛАВНОЕ МЕНЮ -->
+<div id="game-screen" class="terminal-container" style="display: none;">
+    <div class="terminal-header">
+        <span id="header-user">ПОЛЬЗОВАТЕЛЬ</span>
+        <span id="header-location">ЛОКАЦИЯ</span>
+        <span>M44</span>
+    </div>
+
+    <div class="terminal-content" style="display: flex; flex-direction: row; gap: 20px;">
+        <!-- Левая панель: Статы и Лог -->
+        <div style="flex: 2; display: flex; flex-direction: column; gap: 15px;">
+            <div class="panel">
+                <h3 class="text-glow">СТАТУС</h3>
+                <div id="player-stats" style="font-size: 1.1em;"></div>
+            </div>
+            <div class="panel" style="flex-grow: 1; overflow-y: auto; max-height: 400px;">
+                <h3 class="text-glow">ЖУРНАЛ</h3>
+                <div id="game-log" style="display: flex; flex-direction: column; gap: 5px;"></div>
+            </div>
+        </div>
+
+        <!-- Правая панель: Кнопки -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+            <div class="panel">
+                <h3 class="text-glow">ДЕЙСТВИЯ</h3>
+                <div id="main-buttons" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Кнопки рендерятся через JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКИ -->
+<div id="move-modal" class="modal-overlay">
+    <div class="modal-content" style="border-color: var(--term-amber);">
+        <h2 class="warning-text" style="text-align:center">🗺️ ПЕРЕХОД</h2>
+        <div id="move-stations" style="display: flex; flex-direction: column; gap: 10px; margin: 15px 0;"></div>
+        <button class="term-btn danger" onclick="closeModal('move-modal')">ОТМЕНА</button>
+    </div>
+</div>
+
+<div id="npc-modal" class="modal-overlay">
+    <div class="modal-content" style="border-color: var(--term-green);">
+        <h2 class="text-glow" style="text-align:center">👥 NPC</h2>
+        <div id="npc-list" style="display: flex; flex-direction: column; gap: 10px; margin: 15px 0;"></div>
+        <button class="term-btn danger" onclick="closeModal('npc-modal')">ЗАКРЫТЬ</button>
+    </div>
+</div>
+
+<div id="dialog-modal" class="modal-overlay" style="z-index: 300; background: rgba(0,0,0,0.9);">
+    <div class="modal-content" style="border-color: var(--term-green);">
+        <h2 id="dialog-speaker" class="text-glow" style="text-align:center; margin-bottom: 10px;"></h2>
+        <div id="dialog-text" style="font-size: 1.1em; margin-bottom: 20px; color: var(--term-amber); line-height: 1.5;"></div>
+        <div id="dialog-options" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <button class="term-btn danger" style="margin-top: 15px;" onclick="closeModal('dialog-modal')">ЗАКРЫТЬ</button>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "player": {
+    "total_health": 30,
+    "body_parts": {
+      "голова": {
+        "name": "Голова",
+        "max_hp": 5,
+        "multiplier": 2.5,
+        "description": "Самая уязвимая часть тела"
+      },
+      "торс": {
+        "name": "Торс",
+        "max_hp": 10,
+        "multiplier": 1.2,
+        "description": "Основная часть тела"
+      },
+      "руки": {
+        "name": "Руки",
+        "max_hp": 7.5,
+        "multiplier": 0.7,
+        "description": "Влияют на точность атак"
+      },
+      "ноги": {
+        "name": "Ноги",
+        "max_hp": 7.5,
+        "multiplier": 0.7,
+        "description": "Влияют на возможность убежать"
+      }
+    },
+    "block": {
+      "damage_reduction_base": 50,
+      "damage_reduction_per_toughness": 5
+    }
+  }
+}
