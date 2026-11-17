@@ -8825,3 +8825,67 @@ TypeError: object of type 'Embed' has no len()
 2026-11-17 13:58:44 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
 2026-11-17 13:58:44 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
 2026-11-17 13:58:57 - metro_bot - INFO - Команда /menu от 900000001
+2026-11-17 16:05:28 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 16:05:29 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 16:05:29 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 16:05:29 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 16:05:29 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 16:05:29 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 16:05:29 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 16:05:29 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 16:05:29 - metro_bot - INFO - Найдено записей в БД: 0
+2026-11-17 16:05:29 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 16:05:29 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 16:05:29 - metro_bot - INFO - Загружено игроков в память: 0
+2026-11-17 16:05:29 - metro_bot - INFO - Настройка команд...
+2026-11-17 16:05:29 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 16:05:29 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 16:05:29 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 16:05:29 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 16:05:29 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 69 минут
+2026-11-17 16:05:29 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 16:05:29 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 16:05:29 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 16:06:14 - metro_bot - INFO - Команда /start от 900000001
+2026-11-17 16:08:06 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 16:08:06 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 16:08:07 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 16:08:07 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 16:08:07 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 16:08:07 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 16:08:07 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 16:08:07 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 16:08:07 - metro_bot - INFO - Найдено записей в БД: 0
+2026-11-17 16:08:07 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 16:08:07 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 16:08:07 - metro_bot - INFO - Загружено игроков в память: 0
+2026-11-17 16:08:07 - metro_bot - INFO - Настройка команд...
+2026-11-17 16:08:07 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 16:08:07 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 16:08:07 - metro_bot - INFO - 🐛 Debug-команды зарегистрированы
+2026-11-17 16:08:07 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 16:08:07 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 16:08:07 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 82 минут
+2026-11-17 16:08:07 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 16:08:07 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 16:08:07 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 16:08:23 - metro_bot - INFO - Команда /start от 900000002
+2026-11-17 16:08:37 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 16:09:05 - metro_bot - INFO - [KEY] 900000002 создал ключ MTR-IHS3-5YYI (permanent)
+2026-11-17 16:09:15 - metro_bot - INFO - Команда /start от 900000002
+2026-11-17 16:09:16 - metro_bot - INFO - [KEY] Игрок 900000002 активировал ключ 'MTR-IHS3-5YYI'
+2026-11-17 16:09:27 - metro_bot - INFO - Создан новый игрок мопс (id=900000002)
+2026-11-17 16:09:27 - metro_bot - INFO - Создан новый игрок: мопс
+2026-11-17 16:09:35 - metro_bot - INFO - [PROLOGUE] 900000002: пролог завершён (skipped=True)
+2026-11-17 16:09:39 - metro_bot - INFO - [MOVE] Нажата станция 'лесопарковая' от 900000002
+2026-11-17 16:09:39 - metro_bot - INFO - [MOVE] Вызываю move_player для мопс → лесопарковая
+2026-11-17 16:09:39 - metro_bot - INFO - [SURFACE] Стая без Вождя: ['мерзляк_охотник']
+2026-11-17 16:09:39 - metro_bot - INFO - [MOVE] move_player вернул: 🚇 **мопс** идет от **Бульвар Дмитрия Донского** к **Лесопарковая**...
+
+💀 Мутант!...
+2026-11-17 16:09:40 - metro_bot - INFO - Бой начат: мопс vs [Мерзляк-Охотник], дистанция: close
+2026-11-17 16:09:40 - metro_bot - INFO - [SURFACE] Бой отправлен: ['мерзляк_охотник']
+2026-11-17 16:09:42 - metro_bot - INFO - ⚙️ actions_callback: user=900000002
+2026-11-17 16:09:42 - metro_bot - INFO - ⚙️ _ActionSubmenu: создан, кнопок=5
+2026-11-17 16:09:43 - metro_bot - INFO - ⚙️ retreat_callback: user=900000002
+2026-11-17 16:09:43 - metro_bot - INFO - Бой завершён (участников: 1)

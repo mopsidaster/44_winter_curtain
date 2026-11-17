@@ -1,0 +1,61 @@
+2026-11-17 16:05:28 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 16:05:29 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 16:05:29 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 16:05:29 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 16:05:29 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 16:05:29 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 16:05:29 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 16:05:29 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 16:05:29 - metro_bot - INFO - Найдено записей в БД: 0
+2026-11-17 16:05:29 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 16:05:29 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 16:05:29 - metro_bot - INFO - Загружено игроков в память: 0
+2026-11-17 16:05:29 - metro_bot - INFO - Настройка команд...
+2026-11-17 16:05:29 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 16:05:29 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 16:05:29,145 INFO web: Debug-команды отключены. Для включения задай WC_DEBUG=1.
+2026-11-17 16:05:29,277 INFO web: Мессенджер: {'imported': 0, 'contacts': 0}
+2026-11-17 16:05:29 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 16:05:29,295 WARNING web.compat: Доска заданий NPC запущена
+2026-11-17 16:05:29 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 16:05:29 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 69 минут
+2026-11-17 16:05:29 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 16:05:29 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 16:05:29 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 16:06:14,205 INFO web: Новый аккаунт мопс (uid=900000001, admin=False)
+2026-11-17 16:06:14 - metro_bot - INFO - Команда /start от 900000001
+[DB] Таблица players создана
+[OK] База данных metro.db инициализирована
+
+==============================================================
+  44 WHITE CURTAIN — сервер запущен
+==============================================================
+  Локально:      http://127.0.0.1:8080
+  Radmin VPN     http://26.65.136.44:8080
+  локальная сеть http://172.28.6.214:8080
+  PIN сервера:   включён
+  Админ:         mops
+  Debug:         выключен
+  Команд: 29   БД игры: C:\Users\dpivovarov\IdeaProjects\7pro_YA360API\Metro2044\0.5\build0_5\metro.db
+==============================================================
+
+
+Остановка сервера…
+Сервер остановлен, БД закрыта.
+Exception ignored while joining a thread in _thread._shutdown():
+Traceback (most recent call last):
+  File "C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\threading.py", line 1583, in _shutdown
+    _thread_shutdown()
+KeyboardInterrupt: 
+2026-11-17 16:07:07,437 ERROR asyncio: Task was destroyed but it is pending!
+task: <Task cancelling name='Task-30' coro=<RequestHandler.start() running at C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiohttp\web_protocol.py:679> wait_for=<Task cancelling name='Task-31' coro=<RequestHandler._handle_request() running at C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiohttp\web_protocol.py:575> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[Task.task_wakeup(), gather.<locals>._done_callback() at C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\tasks.py:810]> cb=[gather.<locals>._done_callback() at C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\tasks.py:810]>
+Exception ignored while closing generator <coroutine object RequestHandler.start at 0x0000020CC31B41D0>:
+Traceback (most recent call last):
+  File "C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiohttp\web_protocol.py", line 733, in start
+  File "C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiohttp\web_protocol.py", line 530, in force_close
+  File "C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\proactor_events.py", line 109, in close
+  File "C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 827, in call_soon
+  File "C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 550, in _check_closed
+RuntimeError: Event loop is closed
+2026-11-17 16:07:07,439 ERROR asyncio: Task was destroyed but it is pending!
+task: <Task cancelling name='Task-31' coro=<RequestHandler._handle_request() running at C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiohttp\web_protocol.py:575> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[Task.task_wakeup(), gather.<locals>._done_callback() at C:\Users\dpivovarov\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\tasks.py:810]>

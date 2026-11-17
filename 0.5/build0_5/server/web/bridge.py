@@ -188,6 +188,48 @@ class Session:
                 await self.fail(f"/{name}", e)
             await self._after()
 
+    # ---------- безлоковые варианты (замок держит вызывающий) ----------
+    async def click_unlocked(self, view_id, item_id, values=None):
+        self.last_seen = time.time(); view = self.views.get(view_id)
+        if view is None:
+            await self.toast("Меню устарело. Открой /menu заново.", "warn"); return await self._after()
+        if view.is_finished():
+            try: await view.on_timeout()
+            except Exception as e: await self.fail("on_timeout", e)
+            await self.toast("Время меню истекло. Открой /menu заново.", "warn"); return await self._after()
+        item = next((i for i in view.children if i.custom_id == item_id), None)
+        if item is None or item.disabled:
+            await self.toast("Кнопка недоступна.", "warn"); return await self._after()
+        mid = self.screen_of_view(view_id) or self.last_screen()
+        it = Interaction(self, message_id=mid, client=self.client)
+        if isinstance(item, Select):
+            item.values = list(values or []); it.data = {"values": item.values, "component_type": 3}
+        try:
+            if await view.interaction_check(it): await item.callback(it)
+        except Exception as e:
+            await self.fail("Кнопка «%s»" % (getattr(item, "label", None) or item_id), e)
+        await self._after()
+
+    async def command_unlocked(self, name, **params):
+        self.last_seen = time.time()
+        cmd = COMMANDS.get(name)
+        if not cmd:
+            await self.toast(f"Нет команды /{name}", "warn"); return await self._after()
+        for p in cmd.get("choice_params", []):
+            if p in params and not isinstance(params[p], Choice):
+                params[p] = Choice(name=str(params[p]), value=params[p])
+        if name in READONLY: self.last_cmd = (name, dict(params))
+        it = Interaction(self, client=self.client)
+        try:
+            await cmd["callback"](it, **params)
+        except TypeError as e:
+            if "argument" in str(e):
+                await self.toast(f"/{name}: не хватает параметров — {', '.join(cmd['params']) or 'нет'}", "warn")
+            else: await self.fail(f"/{name}", e)
+        except Exception as e:
+            await self.fail(f"/{name}", e)
+        await self._after()
+
     async def refresh(self):
         """Тихое обновление после чужого действия. Боевой экран никогда не
         подменяется меню: сначала пробуем хуки самой View, иначе молчим."""
