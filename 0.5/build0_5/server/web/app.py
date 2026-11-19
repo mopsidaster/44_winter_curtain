@@ -896,6 +896,11 @@ async def _serve():
         with contextlib.suppress(Exception):
             await runner.cleanup()
 
+async def index(request):
+    return web.FileResponse(
+        os.path.join(WEB_DIR, "static", "index.html"),
+        headers={"Cache-Control": "no-cache"})
+
 
 def main():
     logging.basicConfig(level=logging.INFO,

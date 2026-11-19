@@ -37,7 +37,7 @@
       <div id="auth-err" class="auth-err" role="alert"></div>
       <button id="auth-go" class="btn success wide" type="submit">Войти в тоннель</button>
     </form>
-    <p class="auth-note">Права администратора выдаёт хозяин сервера через <code>WC_ADMIN</code>. Ключ доступа — <code>/admin_key permanent</code>. Схема метро — <kbd>M</kbd>, бригады — <kbd>B</kbd>.</p>
+    <p class="auth-note">Права администратора выдаёт хозяин сервера через <code>WC_ADMIN</code>. Ключ доступа — <code>/admin_key permanent</code>. Схема метро — <kbd>M</kbd>, бригады — <kbd>B</kbd>, ивенты — <kbd>E</kbd>.</p>
   </div>
 </section>
 
@@ -55,6 +55,7 @@
     </div>
     <div class="top-actions">
       <button id="brigada-btn" class="icon-btn" type="button" title="Бригада (B)">🤝<span>Бригада</span><em id="brigada-count" class="badge hidden">0</em></button>
+      <button id="events-btn" class="icon-btn" type="button" title="Глобальные ивенты (E)">🌍<span>Ивент</span><em id="events-timer" class="badge hidden">—</em></button>
       <button id="msg-btn" class="icon-btn" type="button" title="Мессенджер (Ctrl+M)">✉<span>Связь</span><em id="msg-count" class="badge hidden">0</em></button>
       <button id="sound" class="icon-btn on" type="button" title="Звук включён" aria-pressed="true">🔊<span>Звук</span></button>
       <button id="errors-btn" class="icon-btn" type="button" title="Журнал ошибок">⚠<span>Журнал</span><em id="err-count" class="badge hidden">0</em></button>
@@ -91,6 +92,7 @@
         <button data-cmd="menu">🎮 Меню</button>
         <button data-open-map title="Схема метро (M)">🗺 Схема</button>
         <button data-open-brigada title="Бригада (B)">🤝 Бригада</button>
+        <button data-open-events title="Глобальные ивенты (E)">🌍 Ивенты</button>
         <button data-cmd="status">📊 Статус</button>
         <button data-cmd="faction">🏴 Фракции</button>
         <button data-cmd="leaderboard">🏆 Топ</button>
@@ -127,6 +129,7 @@
     <div class="hints">
       <span><kbd>/</kbd> команда</span><span><kbd>↑</kbd><kbd>↓</kbd> история</span>
       <span><kbd>Tab</kbd> дополнить</span><span><kbd>M</kbd> схема</span><span><kbd>B</kbd> бригада</span>
+      <span><kbd>E</kbd> ивенты</span>
       <span><kbd>Ctrl</kbd>+<kbd>M</kbd> мессенджер</span><span><kbd>Esc</kbd> закрыть</span>
     </div>
   </footer>
@@ -192,14 +195,18 @@
 <!-- БРИГАДЫ: панель строит static/brigada.js -->
 <div id="wcbrig" class="wcb hidden" aria-hidden="true"></div>
 
+<!-- ГЛОБАЛЬНЫЕ ИВЕНТЫ: панель строит static/events.js -->
+<div id="wcevt" class="wce hidden" aria-hidden="true"></div>
+
 <!-- СХЕМА МЕТРО: модальное окно, весь DOM строит static/map.js -->
 <div id="wcmap" class="wcm hidden" aria-hidden="true"></div>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
 
-<script src="/static/app.js?v=20261118b"></script>
-<script src="/static/msg.js?v=20261118b"></script>
-<script src="/static/brigada.js?v=20261118b"></script>
-<script src="/static/map.js?v=20261118b"></script>
+<script src="/static/app.js?v=20261119c"></script>
+<script src="/static/msg.js?v=20261119c"></script>
+<script src="/static/brigada.js?v=20261119c"></script>
+<script src="/static/events.js?v=20261119d"></script>
+<script src="/static/map.js?v=20261119c"></script>
 </body>
 </html>

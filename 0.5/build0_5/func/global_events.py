@@ -11,11 +11,13 @@
 import random
 import asyncio
 import discord
+import time
 from discord.ext import commands
 from utils.logger import get_logger
 from config.map_config import BALANCE, STATIONS_DICT
 from .map_data import MAP_DATA
 from .station_utils import has_station_type, is_trade_station
+
 
 logger = get_logger()
 
@@ -573,6 +575,56 @@ def get_filter_discount(game_manager) -> float:
     return 1.0
 
 
+# ==================== ВЕБ-ТЕРМИНАЛ ====================
+
+def event_zones(gm, eid: str) -> list:
+    """Станции, которых касается ивент (для панели в терминале)."""
+    z = []
+    if eid == "frost":
+        z = [getattr(gm, 'frost_station', None)] + list(getattr(gm, 'frost_connections', []) or [])
+    elif eid == "chemical_cloud":
+        z = [getattr(gm, 'chemical_cloud_station', None)] + list(getattr(gm, 'chemical_cloud_connections', []) or [])
+    elif eid == "heating_failure":
+        z = [getattr(gm, 'heating_station', None)]
+    elif eid == "raider_raid":
+        z = list(getattr(gm, 'raider_raid_stations', []) or [])
+    elif eid == "station_celebration":
+        z = [getattr(gm, 'celebration_station', None)]
+    elif eid == "stalker_workshop":
+        z = [getattr(gm, 'workshop_station', None)]
+    elif eid == "mutant_breach":
+        z = [getattr(gm, 'breach_station', None)]
+    return [s for s in z if s]
+
+def event_payload(gm, event: dict, action: str, remaining=None) -> dict:
+    zones = event_zones(gm, event["id"])
+    total = event["duration"] * 60
+    return {
+        "type": "global_event",
+        "action": action,                      # start | end | state
+        "id": event["id"],
+        "kind": event["type"],                 # buff | debuff | neutral
+        "title": event["text"].split("\n")[0].replace("**", ""),
+        "text": event["text"],
+        "description": event.get("description", ""),
+        "duration": total,
+        "remaining": round(remaining if remaining is not None else total),
+        "stations": zones,
+        "station_names": [MAP_DATA["станции"][s]["name"] for s in zones if s in MAP_DATA["станции"]],
+        "ts": time.time(),
+    }
+
+async def web_broadcast(bot, payload: dict):
+    """Шлёт событие всем подключённым веб-клиентам. В Discord-режиме — no-op."""
+    hub = getattr(bot, "_hub", None)
+    if hub is None:
+        return
+    for uid in list(getattr(hub, "sessions", {})):
+        try:
+            await hub.emit_to(uid, payload)
+        except Exception:
+            logger.debug("🌍 event broadcast to %s failed", uid)
+
 # ==================== ЗАПУСК ====================
 
 async def run_global_events(bot: commands.Bot, game_manager):
@@ -794,6 +846,7 @@ async def trigger_event(bot: commands.Bot, game_manager):
         await _apply_frost_to_zone_players(bot, game_manager)
 
     await send_event_notification(bot, game_manager, event)
+    await web_broadcast(bot, event_payload(game_manager, event, "start"))
 
     async def remove_event():
         await asyncio.sleep(event["duration"] * 60)
@@ -869,6 +922,7 @@ async def end_event(bot: commands.Bot, game_manager, event):
             await channel.send(embed=embed)
         except Exception as e:
             logger.error(f"🌍 Ошибка отправки уведомления о завершении ивента: {e}")
+        await web_broadcast(bot, event_payload(game_manager, event, "end", remaining=0))
 
 
 async def send_event_notification(bot: commands.Bot, game_manager, event):
