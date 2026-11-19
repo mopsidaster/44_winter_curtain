@@ -1,5 +1,6 @@
 /* 44 WHITE CURTAIN — ГЛОБАЛЬНЫЕ ИВЕНТЫ. Панель: активное событие, таймер, зоны, журнал.
-   Данные: WS global_event (start/end) + /api/event/state. Сервер — единственный источник правды. */
+   Сервер — единственный источник правды (/api/event/state + boot-id).
+   Сверка ограничена по времени: "ПРОВЕРКА" никогда не висит вечно. */
 (() => {
 'use strict';
 const WC = window.WC; if (!WC) { console.warn('[events] нет шины WC'); return; }
@@ -31,6 +32,9 @@ const CSS = `
  background:var(--panel);color:var(--mute);cursor:pointer;font-size:15px;line-height:1}
 #wcevt .wce-x:hover{border-color:var(--rust);color:#fff;background:#5c2620}
 #wcevt .wce-body{flex:1 1 auto;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:11px}
+#wcevt .wce-warn{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;
+ border:1px solid rgba(255,107,92,.55);background:rgba(30,15,13,.9);color:#ffb3aa;font-size:11.5px;line-height:1.5}
+#wcevt .wce-warn.hidden{display:none}
 #wcevt .wce-card{background:var(--panel);border:1px solid var(--edge);border-radius:11px;padding:13px}
 #wcevt .wce-card.active{border-color:var(--edge);position:relative;overflow:hidden}
 #wcevt .wce-card.active::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;
@@ -79,6 +83,7 @@ const CSS = `
 #wcevt .wce-body::-webkit-scrollbar-thumb{border:2px solid var(--track);border-radius:6px;
  background:linear-gradient(180deg,var(--amber),#c97f10)}
 #events-btn.has-unread{border-color:var(--amber);color:var(--amber)}
+#events-btn.has-warn{border-color:var(--rust);color:var(--rust)}
 #events-timer{background:var(--rust);color:#fff;font-style:normal}
 @media(max-width:620px){#wcevt .wce-panel{width:100vw}}
 `;
@@ -89,7 +94,6 @@ const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'
   .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const sfx = f => { try { WC.sfx && WC.sfx(f); } catch(_){} };
 const toast = (t,k) => { try { WC.toast && WC.toast(t,k); } catch(_){} };
-const api = p => WC.api(p);
 
 const ICONS = { trade_caravan:'🛒', mutant_activity:'⚠️', frost:'❄️', station_celebration:'🎉',
   radiation_spike:'☢️', grand_sale:'🏪', gas_leak:'☠️', stalker_workshop:'🔧', mutant_breach:'🧟',
@@ -98,10 +102,8 @@ const KIND = { buff:'БАФФ', debuff:'ДЕБАФФ', neutral:'СОБЫТИЕ' 
 const ACC  = { buff:'#66ff99', debuff:'#ff6b5c', neutral:'#ffb02e' };
 const HIST_KEY = 'wc.events.hist';
 
-const E = { open:false, active:null, history:[], timer:0, poll:0 };
+const E = { open:false, active:null, history:[], timer:0, poll:0, retryT:0, fails:0, apiWarn:'', boot:0 };
 try{ E.history = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }catch(_){ E.history = []; }
-// Всё "живое", пережившее перезагрузку страницы, — НЕДОВЕРЕННОЕ, пока сервер не подтвердит.
-// Иначе после рестарта сервера журнал врёт "LIVE".
 E.history.forEach(h => { if (!h.ended) h.verified = false; });
 
 let HOST = document.getElementById('wcevt');
@@ -116,6 +118,7 @@ HOST.innerHTML = `
   <button class="wce-x" data-r="close" type="button" aria-label="Закрыть">✕</button>
  </header>
  <div class="wce-body">
+  <div class="wce-warn hidden" data-r="warn"></div>
   <div data-r="active"></div>
   <h4 class="wce-sec">Журнал событий <em data-r="hCount">0</em></h4>
   <div class="wce-hist" data-r="hist"></div>
@@ -130,32 +133,71 @@ const mmss = s => { s=Math.max(0,Math.round(s)); return String(Math.floor(s/60))
 const hhmm = ts => new Date(ts*1000).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
 function saveHist(){ try{ localStorage.setItem(HIST_KEY, JSON.stringify(E.history.slice(0,20))); }catch(_){} }
 
-/* ---------- СВЕРКА С СЕРВЕРОМ (единственный источник правды) ---------- */
+/* ---------- сверка с сервером: ограничена по времени, не висит вечно ---------- */
+async function stateFetch(){
+  const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const to = ctl ? setTimeout(() => ctl.abort(), 4000) : 0;
+  try{
+    const r = await fetch('/api/event/state', ctl ? { signal: ctl.signal } : {});
+    let d = {}; try{ d = await r.json(); }catch(_){}
+    return { ok: r.ok, status: r.status, d };
+  }catch(e){
+    return { ok:false, status:0, d:{ error:String(e && e.message || e) } };
+  }finally{ if (to) clearTimeout(to); }
+}
+function warnFor(st, d){
+  if (st === 404) return 'API ивентов не установлен (404). Добавь server/web/events_api.py и хук install в app.py, затем перезапусти сервер.';
+  if (st === 401) return 'Нужен вход в терминал — журнал подтвердится после авторизации.';
+  if (st === 500) return 'Ошибка сервера в ивентах (500): ' + ((d && d.error) || 'проверь global_events.py');
+  if (st === 0)   return 'Сервер не отвечает — проверь, что он запущен (пульт, пункт [4]).';
+  return 'API ивентов недоступен (' + st + ').';
+}
+function interruptAll(reason){
+  const now = Date.now()/1000; let changed = false;
+  E.history.forEach(h => {
+    if (h.ended) return;
+    h.ended = now; h.interrupted = true; h.noapi = (reason === 'noapi'); h.verified = false; changed = true;
+  });
+  if (changed) saveHist();
+  E.active = null;
+}
 function reconcile(act){
   const now = Date.now()/1000;
   E.history.forEach(h => {
     if (h.ended) return;
-    if (act && h.id === act.id) { h.verified = true; return; }   // сервер подтвердил — живём
-    h.ended = now; h.interrupted = true; h.verified = false;     // сирота после рестарта — прерван
+    if (act && h.id === act.id) { h.verified = true; return; }
+    h.ended = now; h.interrupted = true; h.verified = false;
   });
   saveHist();
 }
 async function load(){
-  const r = await api('/api/event/state');
-  if (!(r && r.ok && r.d && r.d.ok)) { render(); return; }       // сервер молчит/401 — состояние не трогаем
-  const act = r.d.active || null;
-  reconcile(act);
-  if (act) setActive(act, true);
-  else if (E.active) clearActive();
-  render();
+  const r = await stateFetch();
+  if (r.ok && r.d && r.d.ok){
+    E.fails = 0; E.apiWarn = r.d.warning || '';
+    if (r.d.boot){ if (E.boot && E.boot !== r.d.boot) interruptAll('restart'); E.boot = r.d.boot; }
+    const act = r.d.active || null;
+    reconcile(act);
+    if (act) setActive(act, true); else if (E.active) clearActive();
+    render(); return;
+  }
+  if (r.status === 401){ E.apiWarn = warnFor(401); render(); scheduleRetry(); return; }
+  E.fails++;
+  E.apiWarn = warnFor(r.status, r.d);
+  if (E.fails >= 3) interruptAll('noapi');   // срок жизни "ПРОВЕРКИ" истёк — честный финал
+  render(); scheduleRetry();
+}
+function scheduleRetry(){
+  clearTimeout(E.retryT);
+  E.retryT = setTimeout(load, Math.min(2000 * Math.pow(2, Math.min(E.fails, 4)), 15000));
 }
 function setActive(d, quiet){
+  E.fails = 0; E.apiWarn = '';
   if (E.active && E.active.id === d.id && E.active.ts === d.ts) { E.active.remaining = d.remaining; render(); return; }
   E.active = { id:d.id, kind:d.kind||'neutral', title:clean(d.title), desc:d.description||'',
     stations:d.station_names||[], duration:d.duration||1, remaining:d.remaining||0, ts:d.ts||Date.now()/1000 };
   let h = E.history.find(x => x.id === d.id && !x.ended);
   if (!h){ h = { id:d.id, kind:E.active.kind, title:E.active.title, started:E.active.ts, ended:null }; E.history.unshift(h); }
-  h.verified = true; h.interrupted = false;
+  h.verified = true; h.interrupted = false; h.noapi = false;
   E.history = E.history.slice(0,20); saveHist();
   if (!quiet){ toast(`${ICONS[d.id]||'🌍'} ${E.active.title}`, d.kind==='debuff'?'warn':'success'); sfx('ding.mp3'); }
   render();
@@ -171,11 +213,15 @@ function clearActive(id){
 /* ---------- отрисовка ---------- */
 function chip(){
   const btn = document.getElementById('events-btn'), badge = document.getElementById('events-timer');
-  if (btn) btn.classList.toggle('has-unread', !!E.active);
+  if (btn){ btn.classList.toggle('has-unread', !!E.active); btn.classList.toggle('has-warn', !!E.apiWarn && !E.active); }
   if (badge){
     if (E.active){ badge.textContent = mmss(E.active.remaining); badge.classList.remove('hidden'); }
     else badge.classList.add('hidden');
   }
+}
+function warnCard(){
+  if (!E.apiWarn) return '';
+  return `⚠ <span>${esc(E.apiWarn)}</span>`;
 }
 function activeCard(){
   const a = E.active;
@@ -206,7 +252,7 @@ function histRows(){
     const cls = live ? (h.verified ? 'live' : 'check') : '';
     const sub = live
       ? (h.verified ? `начался в ${hhmm(h.started)} · идёт сейчас` : `начался в ${hhmm(h.started)} · сверяюсь с сервером…`)
-      : `${hhmm(h.started)} – ${hhmm(h.ended)}`;
+      : `${hhmm(h.started)} – ${hhmm(h.ended)}${h.noapi ? ' · API недоступен' : ''}`;
     return `<div class="wce-h-row ${cls}">
       <span class="wce-h-ico">${ICONS[h.id]||'🌍'}</span>
       <div class="wce-h-main"><b>${esc(h.title)}</b><span>${sub}</span></div>
@@ -215,11 +261,13 @@ function histRows(){
   }).join('');
 }
 function render(){
+  R.warn.innerHTML = warnCard();
+  R.warn.classList.toggle('hidden', !E.apiWarn);
   R.active.innerHTML = activeCard();
   R.hist.innerHTML = histRows();
   R.hCount.textContent = String(E.history.length);
   R.live.classList.toggle('on', !!E.active);
-  R.liveTxt.textContent = E.active ? 'В ЭФИРЕ' : 'ЭФИР ТИХ';
+  R.liveTxt.textContent = E.active ? 'В ЭФИРЕ' : (E.apiWarn ? 'НЕТ ДАННЫХ' : 'ЭФИР ТИХ');
   chip();
 }
 function tick(){
@@ -268,8 +316,7 @@ WC.on('ready', () => load());
 WC.on('online', up => { if (up) load(); });
 
 E.timer = setInterval(tick, 1000);
-// Перепроверка наличия активного ивента: ловим рестарт сервера, даже если WS-событие не пришло.
-E.poll = setInterval(() => { if (E.open || E.active) load(); }, 30000);
+E.poll = setInterval(load, 20000);   // постоянная сверка: ловит рестарт и новые ивенты даже без WS-пуша
 WC.events = { open, close, toggle, refresh: load };
 render();
 load();

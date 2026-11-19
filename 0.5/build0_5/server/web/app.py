@@ -744,6 +744,13 @@ async def bootstrap(app):
     else:
         log.error("Бригады: модуль не подключён на этапе make_app")
 
+        # глобальные ивенты — панель в терминале
+    try:
+        import events_api
+        events_api.install(app)
+    except Exception:
+        log.exception("Панель ивентов не подключена")
+
     if DEBUG_ON:
         added = await compat.register_debug(hub.bot, game_manager)
         log.warning("DEBUG включён (WC_DEBUG=1): %s", ", ".join(added) or "нет команд")

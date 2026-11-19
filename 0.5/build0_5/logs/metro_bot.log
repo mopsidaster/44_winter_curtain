@@ -9437,3 +9437,56 @@ TypeError: object of type 'Embed' has no len()
 2026-11-19 14:35:43 - metro_bot - INFO - Команда /menu от 900000002
 2026-11-19 14:36:00 - metro_bot - INFO - 🌍 ЗАПУСК ИВЕНТА: frost (тип: debuff, длительность: 20 мин)
 2026-11-19 14:36:00 - metro_bot - INFO - 🌍 Эффект frost применен
+2026-11-19 14:38:00 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-19 14:38:00 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-19 14:38:00 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-19 14:38:00 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-19 14:38:00 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-19 14:38:00 - metro_bot.func - INFO -    has_station_type: True
+2026-11-19 14:38:00 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-19 14:38:00 - metro_bot.func - INFO -    is_start_station: True
+2026-11-19 14:38:00 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-19 14:38:00 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-19 14:38:00 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-19 14:38:00 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-19 14:38:00 - metro_bot - INFO - Настройка команд...
+2026-11-19 14:38:00 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-19 14:38:00 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-19 14:38:00 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-19 14:38:00 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-19 14:38:00 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-19 14:38:00 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-19 14:38:00 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 61 минут
+2026-11-19 14:38:00 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-19 14:38:00 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-19 14:38:00 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-19 14:38:11 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-19 14:38:39 - metro_bot - INFO - 🌍 ЗАПУСК ИВЕНТА: stalker_workshop (тип: buff, длительность: 10 мин)
+2026-11-19 14:38:39 - metro_bot - INFO - 🌍 Эффект stalker_workshop применен
+2026-11-19 14:42:13 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-19 14:48:39 - metro_bot - INFO - 🌍 ЗАВЕРШЕНИЕ ИВЕНТА: stalker_workshop
+2026-11-19 14:48:39 - metro_bot - INFO - 🌍 Эффект stalker_workshop снят
+2026-11-19 14:51:14 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-19 14:51:14 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-19 14:51:14 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-19 14:51:14 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-19 14:51:14 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-19 14:51:14 - metro_bot.func - INFO -    has_station_type: True
+2026-11-19 14:51:14 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-19 14:51:14 - metro_bot.func - INFO -    is_start_station: True
+2026-11-19 14:51:14 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-19 14:51:14 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-19 14:51:14 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-19 14:51:14 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-19 14:51:14 - metro_bot - INFO - Настройка команд...
+2026-11-19 14:51:14 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-19 14:51:14 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-19 14:51:14 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-19 14:51:14 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-19 14:51:14 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-19 14:51:14 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-19 14:51:14 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 62 минут
+2026-11-19 14:51:14 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-19 14:51:14 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-19 14:51:14 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-19 14:51:23 - metro_bot - INFO - Команда /menu от 900000002
