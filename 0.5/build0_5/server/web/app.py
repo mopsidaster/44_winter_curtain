@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Веб-сервер игры: LAN/Radmin VPN, аккаунты, WS-синхронизация, мессенджер.
+"""Веб-сервер игры: LAN/Radmin VPN, аккаунты, WS-синхронизация, мессенджер, бригады.
 
-Билд 0.5 — ревизия серверной части.
-Ключевые изменения против предыдущей версии:
-  * debug-команды только по WC_DEBUG=1 и только для админа;
-  * «первый зарегистрированный = админ» убран, админ выдаётся по WC_ADMIN;
-  * PBKDF2 и sqlite вынесены из event loop, соединения закрываются;
-  * весь ввод WS/REST валидируется и троттлится, ошибки дают 4xx, а не 500;
-  * утечки TOKENS/ATTEMPTS/sessions/views устранены фоновой уборкой;
-  * корректная остановка: сначала фон и автосейв, потом close_db().
+Маршруты модулей (map_api, brigades) регистрируются в make_app():
+aiohttp замораживает роутер до on_startup, в bootstrap добавлять роуты нельзя.
 """
 from __future__ import annotations
 
@@ -28,7 +22,6 @@ import time
 
 from aiohttp import web
 
-# --- пути ставим ДО импорта адаптера и func.* -------------------------------
 WEB_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(os.path.dirname(WEB_DIR))
 for _p in (BASE, WEB_DIR):
@@ -43,7 +36,6 @@ from bridge import Hub, READONLY            # noqa: E402
 from discord_shim import COMMANDS           # noqa: E402
 from messenger import Messenger             # noqa: E402
 from sync import World                      # noqa: E402
-import map_api                              # noqa: E402
 
 ACC_DB = os.path.join(WEB_DIR, "accounts.db")
 MSG_DB = os.path.join(WEB_DIR, "messenger.db")
@@ -52,6 +44,7 @@ LEGACY = os.path.join(BASE, "server", "_legacy", "database.json")
 COOKIE = "wc_session"
 TOKENS: dict[str, dict] = {}
 ATTEMPTS: dict[str, list[float]] = {}
+REG_ATTEMPTS: dict[str, list[float]] = {}
 SESSION_TTL = 7 * 86400
 
 HOST = os.environ.get("WC_HOST", "0.0.0.0")
@@ -61,13 +54,12 @@ ADMIN_LOGIN = os.environ.get("WC_ADMIN", "").strip().lower()
 DEBUG_ON = os.environ.get("WC_DEBUG", "0") == "1"
 ALLOW_TOKEN_QUERY = os.environ.get("WC_TOKEN_QUERY", "0") == "1"
 
-# лимиты ввода
-RATE_ACTIONS = float(os.environ.get("WC_RATE", "20"))     # действий в секунду
+RATE_ACTIONS = float(os.environ.get("WC_RATE", "20"))
 RATE_BURST = float(os.environ.get("WC_RATE_BURST", "40"))
 WS_MAX_MSG = 64 * 1024
-LOGIN_LIMIT = 12            # попыток входа в минуту с IP
-REG_LIMIT = 5               # регистраций в час с IP
-MAX_CONTACT_IDS = 500
+LOGIN_LIMIT = 12
+REG_LIMIT = 5
+MAX_IDS = 500
 
 log = logging.getLogger("web")
 APP_HUB: dict = {}
@@ -76,7 +68,6 @@ BG_TASKS: set[asyncio.Task] = set()
 
 
 def spawn(coro, name="bg"):
-    """create_task с сильной ссылкой — иначе GC может съесть задачу."""
     t = asyncio.ensure_future(coro)
     BG_TASKS.add(t)
     t.add_done_callback(BG_TASKS.discard)
@@ -86,12 +77,11 @@ def spawn(coro, name="bg"):
 # ---------- аккаунты ----------
 @contextlib.contextmanager
 def _con(path):
-    """Соединение закрывается всегда; with sqlite3 сам по себе этого не делает."""
     c = sqlite3.connect(path, timeout=10)
     try:
         c.row_factory = sqlite3.Row
         c.execute("PRAGMA journal_mode=WAL")
-        with c:                     # commit / rollback
+        with c:
             yield c
     finally:
         c.close()
@@ -113,13 +103,10 @@ def _hash(pw, salt):
 
 
 async def _hash_async(pw, salt):
-    """200k итераций — это ~150 мс. В event loop такое держать нельзя."""
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, _hash, pw, salt)
 
 
-# фиктивный хеш: считаем его и для несуществующего логина, чтобы время ответа
-# не выдавало наличие аккаунта
 _DUMMY_SALT = secrets.token_hex(16)
 _DUMMY_HASH = _hash("dummy-password-for-timing", _DUMMY_SALT)
 
@@ -141,7 +128,6 @@ class Accounts:
             return [dict(r) for r in c.execute("SELECT * FROM accounts ORDER BY login")]
 
     def directory(self):
-        """Только id+login — не тянем соли и хеши на каждый overview."""
         with _con(ACC_DB) as c:
             return [dict(r) for r in c.execute("SELECT user_id, login FROM accounts ORDER BY login")]
 
@@ -160,9 +146,6 @@ def _throttle(bucket, key, limit, window):
     hits.append(now)
     bucket[key] = hits
     return len(hits) > limit
-
-
-REG_ATTEMPTS: dict[str, list[float]] = {}
 
 
 def auth(request):
@@ -196,10 +179,9 @@ def _need_auth(handler):
 
 
 async def _json(request):
-    """Единая точка разбора тела: мусор -> 400, а не 500."""
     try:
         d = await request.json()
-    except (json.JSONDecodeError, ValueError, UnicodeDecodeError):
+    except Exception:
         raise web.HTTPBadRequest(text=json.dumps({"error": "Некорректный JSON"}, ensure_ascii=False),
                                  content_type="application/json")
     if not isinstance(d, dict):
@@ -237,7 +219,7 @@ def lan_addresses():
 
     def rank(ip):
         if ip.startswith("26."):
-            return 0                                    # Radmin VPN
+            return 0
         if ip.startswith(("192.168.", "10.")):
             return 1
         if ip.startswith("172.") and 16 <= _int(ip.split(".")[1], 0) <= 31:
@@ -259,14 +241,12 @@ async def api_register(request):
     d = await _json(request)
     if PIN and not secrets.compare_digest(str(d.get("pin", "")), PIN):
         return _err("Неверный PIN сервера", 403)
-
     login = str(d.get("login") or "").strip().lower()
     pw = str(d.get("password") or "")
     if not 3 <= len(login) <= 32 or not 6 <= len(pw) <= 128:
         return _err("Логин 3–32 символа, пароль 6–128")
     if not all(ch.isalnum() or ch in "_-." for ch in login):
         return _err("Логин: буквы, цифры, _ - .")
-
     salt = secrets.token_hex(16)
     phash = await _hash_async(pw, salt)
     is_admin = int(bool(ADMIN_LOGIN) and login == ADMIN_LOGIN)
@@ -295,33 +275,28 @@ async def api_login(request):
     d = await _json(request)
     if PIN and not secrets.compare_digest(str(d.get("pin", "")), PIN):
         return _err("Неверный PIN сервера", 403)
-
     login = str(d.get("login") or "").strip().lower()
     pw = str(d.get("password") or "")
     row = await _db(ACCOUNTS.by_login, login)
     if row:
-        calc = await _hash_async(pw, row["salt"])
-        ok = secrets.compare_digest(row["phash"], calc)
+        ok = secrets.compare_digest(row["phash"], await _hash_async(pw, row["salt"]))
     else:
-        await _hash_async(pw, _DUMMY_SALT)      # выравниваем время ответа
+        await _hash_async(pw, _DUMMY_SALT)
         ok = False
     if not ok:
         return _err("Неверный логин или пароль", 401)
-
     tok = secrets.token_urlsafe(32)
     TOKENS[tok] = {"user_id": row["user_id"], "login": row["login"],
                    "admin": bool(row["is_admin"]), "ts": time.time()}
     r = web.json_response({"ok": True, "login": row["login"],
                            "admin": bool(row["is_admin"]), "user_id": row["user_id"]})
-    r.set_cookie(COOKIE, tok, httponly=True, samesite="lax",
-                 max_age=SESSION_TTL, path="/",
-                 secure=request.scheme == "https")
+    r.set_cookie(COOKIE, tok, httponly=True, samesite="lax", max_age=SESSION_TTL,
+                 path="/", secure=request.scheme == "https")
     return r
 
 
 async def api_logout(request):
-    tok = request.cookies.get(COOKIE)
-    a = TOKENS.pop(tok, None)
+    a = TOKENS.pop(request.cookies.get(COOKIE), None)
     if a:
         await _drop_session(request.app["hub"], a["user_id"], save=True)
     r = web.json_response({"ok": True})
@@ -344,14 +319,10 @@ async def api_lan(request):
 
 # ---------- игровой ввод ----------
 class Rate:
-    """Токенизатор на сессию: без него один клиент кладёт сервер."""
     __slots__ = ("tokens", "ts", "rate", "burst")
 
     def __init__(self, rate=RATE_ACTIONS, burst=RATE_BURST):
-        self.rate = rate
-        self.burst = burst
-        self.tokens = burst
-        self.ts = time.monotonic()
+        self.rate, self.burst, self.tokens, self.ts = rate, burst, burst, time.monotonic()
 
     def take(self, cost=1.0):
         now = time.monotonic()
@@ -363,8 +334,14 @@ class Rate:
         return True
 
 
+ADMIN_PREFIXES = ("debug", "admin", "set_channel", "sync", "event_force", "event_toggle")
+
+
+def _allowed(s, name):
+    return not (name.startswith(ADMIN_PREFIXES) and not s.user.guild_permissions.administrator)
+
+
 def _params(raw):
-    """Параметры команды: только скаляры, никаких вложенных объектов."""
     if not isinstance(raw, dict):
         return {}
     out = {}
@@ -400,15 +377,6 @@ async def _dispatch(s, kind, d):
         await s.command(name, **_params(d.get("params")))
 
 
-ADMIN_PREFIXES = ("debug", "admin", "set_channel", "sync", "event_force", "event_toggle")
-
-
-def _allowed(s, name):
-    if name.startswith(ADMIN_PREFIXES) and not s.user.guild_permissions.administrator:
-        return False
-    return True
-
-
 async def _rest(request, kind):
     s = _session(request)
     if s is None:
@@ -419,27 +387,15 @@ async def _rest(request, kind):
     if not rate.take():
         return _err("Слишком часто. Притормози.", 429)
     d = await _json(request)
-    # REST и WS делят одну очередь ops: забираем накопленное до действия,
-    # чтобы ответ содержал именно результат этого запроса.
     s.drain()
     await _dispatch(s, kind, d)
     return web.json_response({"ops": s.drain()})
 
 
-async def api_click(request):
-    return await _rest(request, "click")
-
-
-async def api_submit(request):
-    return await _rest(request, "submit")
-
-
-async def api_command(request):
-    return await _rest(request, "command")
-
-
-async def api_refresh(request):
-    return await _rest(request, "refresh")
+async def api_click(request): return await _rest(request, "click")
+async def api_submit(request): return await _rest(request, "submit")
+async def api_command(request): return await _rest(request, "command")
+async def api_refresh(request): return await _rest(request, "refresh")
 
 
 # ---------- мессенджер API ----------
@@ -451,8 +407,7 @@ def _msg(request):
 async def msg_overview(request):
     s = _session(request)
     m = _msg(request)
-    online = request.app["world"].online()
-    data = await _db(m.contacts, s.user.id, online)
+    data = await _db(m.contacts, s.user.id, request.app["world"].online())
     data["unread"] = await _db(m.unread, s.user.id)
     directory = await _db(ACCOUNTS.directory)
     data["directory"] = [{"id": a["user_id"], "login": a["login"]}
@@ -476,8 +431,6 @@ async def msg_thread(request):
 async def msg_send(request):
     s = _session(request)
     d = await _json(request)
-    kind = d.get("kind")
-    kind = kind if kind in ("dm", "mail") else "dm"
     to = d.get("to")
     if isinstance(to, str):
         acc = await _db(ACCOUNTS.by_login, to)
@@ -485,10 +438,9 @@ async def msg_send(request):
     to = _int(to, 0)
     if to <= 0:
         return _err("Получатель не найден")
-    body = str(d.get("body") or "")
     subject = d.get("subject")
     subject = str(subject)[:120] if subject is not None else None
-    res = await _db(_msg(request).send, s.user.id, to, body, subject, kind)
+    res = await _db(_msg(request).send, s.user.id, to, str(d.get("body") or ""), subject, "dm")
     return web.json_response(res, status=200 if res.get("ok") else 400)
 
 
@@ -506,8 +458,7 @@ async def msg_read(request):
     if ids is not None:
         if not isinstance(ids, list):
             return _err("ids должен быть списком")
-        ids = [_int(i, 0) for i in ids[:MAX_CONTACT_IDS]]
-        ids = [i for i in ids if i > 0]
+        ids = [i for i in (_int(x, 0) for x in ids[:MAX_IDS]) if i > 0]
     peer = _int(d.get("peer"), 0) if d.get("peer") is not None else None
     kind = d.get("kind")
     kind = kind if kind in ("dm", "mail", "system") else None
@@ -531,6 +482,11 @@ async def contact_request(request):
     return web.json_response(res, status=200 if res.get("ok") else 400)
 
 
+def _contact_state(m, owner, peer):
+    with m._con() as c:
+        return m._state(c, owner, peer)
+
+
 async def _contact_action(request, action):
     s = _session(request)
     d = await _json(request)
@@ -538,11 +494,8 @@ async def _contact_action(request, action):
     if peer <= 0 or peer == s.user.id:
         return _err("Некорректный контакт")
     m = _msg(request)
-
     if action == "accept":
-        # принимаем только реально существующую входящую заявку
-        state = await _db(_contact_state, m, s.user.id, peer)
-        if state != "in":
+        if await _db(_contact_state, m, s.user.id, peer) != "in":
             return _err("Заявки от этого игрока нет")
         res = await _db(m.accept, s.user.id, peer)
     elif action == "decline":
@@ -550,40 +503,23 @@ async def _contact_action(request, action):
     elif action == "block":
         res = await _db(m.block, s.user.id, peer)
     elif action == "rename":
-        alias = str(d.get("alias") or "")[:40]
-        res = await _db(m.rename, s.user.id, peer, alias)
+        res = await _db(m.rename, s.user.id, peer, str(d.get("alias") or "")[:40])
     else:
         return _err("Неизвестное действие")
-
     if res.get("ok"):
         await request.app["hub"].emit_to(peer, {"type": "contacts"})
     await request.app["world"].push(s, force=True)
     return web.json_response(res, status=200 if res.get("ok") else 400)
 
 
-def _contact_state(m, owner, peer):
-    with m._con() as c:
-        return m._state(c, owner, peer)
-
-
 @_need_auth
-async def contact_accept(request):
-    return await _contact_action(request, "accept")
-
-
+async def contact_accept(request): return await _contact_action(request, "accept")
 @_need_auth
-async def contact_decline(request):
-    return await _contact_action(request, "decline")
-
-
+async def contact_decline(request): return await _contact_action(request, "decline")
 @_need_auth
-async def contact_block(request):
-    return await _contact_action(request, "block")
-
-
+async def contact_block(request): return await _contact_action(request, "block")
 @_need_auth
-async def contact_rename(request):
-    return await _contact_action(request, "rename")
+async def contact_rename(request): return await _contact_action(request, "rename")
 
 
 # ---------- WebSocket ----------
@@ -609,14 +545,14 @@ async def ws_handler(request):
     if rate is None:
         rate = s._rate = Rate()
     typing_ts = 0.0
+    map_mod = request.app.get("map_api")
+    map_move = getattr(map_mod, "step_move_locked", None) or getattr(map_mod, "ws_map_move_handler", None)
 
     async def sink(payload):
         async with lock:
             if not ws.closed:
                 await ws.send_json(payload)
 
-    # add_sink и стартовая рассылка — внутри try, иначе обрыв на handshake
-    # оставляет мёртвый sink в сессии навсегда
     try:
         s.add_sink(sink)
         await sink(s.snapshot())
@@ -642,11 +578,9 @@ async def ws_handler(request):
             t = d.get("type")
             if t not in WS_TYPES:
                 continue
-
             if t == "ping":
                 await sink({"type": "pong", "ts": time.time()})
                 continue
-
             if t == "typing":
                 now = time.monotonic()
                 if now - typing_ts < 1.5:
@@ -654,22 +588,15 @@ async def ws_handler(request):
                 typing_ts = now
                 peer = _int(d.get("to"), 0)
                 if peer > 0 and await _db(_contact_state, _msg(request), s.user.id, peer) == "ok":
-                    await hub.emit_to(peer, {"type": "typing",
-                                             "from": s.user.id, "login": s.user.name})
+                    await hub.emit_to(peer, {"type": "typing", "from": s.user.id, "login": s.user.name})
                 continue
-
             if not rate.take():
-                await sink({"type": "toast", "text": "Слишком много действий подряд.",
-                            "kind": "warn"})
+                await sink({"type": "toast", "text": "Слишком много действий подряд.", "kind": "warn"})
                 continue
-
             if t == "map_move":
-                # весь автопереход — под одним замком, иначе клик игрока
-                # вклинивается в середину маршрута
-                async with s.lock:
-                    await map_api.step_move_locked(s, d.get("to"))
+                if callable(map_move):
+                    await map_move(s, d)
                 continue
-
             await _dispatch(s, t, d)
     except asyncio.CancelledError:
         raise
@@ -689,7 +616,6 @@ async def ws_handler(request):
 
 
 async def _drop_session(hub, uid, save=False):
-    """Убираем осиротевшую сессию: экраны, View и Modal не должны жить вечно."""
     s = hub.sessions.get(uid)
     if s is None or s.sinks:
         return
@@ -703,16 +629,11 @@ async def _drop_session(hub, uid, save=False):
     for v in list(s.views.values()):
         with contextlib.suppress(Exception):
             v.stop()
-    s.views.clear()
-    s.modals.clear()
-    s.screens.clear()
-    s.order.clear()
-    s.ops.clear()
+    s.views.clear(); s.modals.clear(); s.screens.clear(); s.order.clear(); s.ops.clear()
     s.combat_view = None
     hub.sessions.pop(uid, None)
-    world = hub.world
-    if world is not None:
-        world._hash.pop(uid, None)
+    if hub.world is not None:
+        hub.world._hash.pop(uid, None)
 
 
 async def index(request):
@@ -721,7 +642,6 @@ async def index(request):
 
 # ---------- доставка сообщений ----------
 def on_message(msg):
-    """Вызывается синхронно из Messenger.send — в том числе из чужого потока."""
     hub = APP_HUB.get("hub")
     world = APP_HUB.get("world")
     if hub is None or world is None:
@@ -742,7 +662,6 @@ def on_message(msg):
         running = asyncio.get_running_loop()
     except RuntimeError:
         running = None
-
     if running is LOOP and LOOP is not None:
         spawn(deliver(), "deliver")
     elif LOOP is not None and LOOP.is_running():
@@ -754,7 +673,6 @@ def on_message(msg):
 
 # ---------- фоновая уборка ----------
 async def janitor(app):
-    """Чистим просроченные токены, IP-счётчики и брошенные сессии."""
     hub = app["hub"]
     while True:
         try:
@@ -772,13 +690,15 @@ async def janitor(app):
             for uid, s in list(hub.sessions.items()):
                 if not s.sinks and now - s.last_seen > 300:
                     await _drop_session(hub, uid, save=True)
-                # View/Modal копятся без ограничения — подрезаем протухшие
                 if len(s.views) > 64:
                     for vid in [k for k, v in s.views.items() if v.is_finished()]:
                         s.views.pop(vid, None)
                 if len(s.modals) > 32:
                     keep = list(s.modals)[-16:]
                     s.modals = {k: v for k, v in s.modals.items() if k in keep}
+            with contextlib.suppress(Exception):
+                from func.social.brigade_manager import brigade_manager
+                brigade_manager._cleanup_expired_invites()
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -789,7 +709,7 @@ async def janitor(app):
 async def bootstrap(app):
     global LOOP
     LOOP = asyncio.get_running_loop()
-    os.chdir(BASE)                          # только здесь, не на импорте модуля
+    os.chdir(BASE)
 
     await _db(init_accounts)
     from database.db import init_db
@@ -803,10 +723,26 @@ async def bootstrap(app):
 
     hub = app["hub"]
     hub.bot._hub = hub
+    hub._app = app
+
     setup_commands(hub.bot, game_manager)
     setup_social_commands(hub.bot)
     compat.HUB = hub
     compat.bind_loop()
+
+    with contextlib.suppress(Exception):
+        from func.social.brigade_manager import brigade_manager
+        await brigade_manager.load_all()
+
+    # веб-подмены /brigada * — строго после setup_social_commands
+    brig = app.get("brigades")
+    if brig is not None:
+        try:
+            brig.install_commands(app)
+        except Exception:
+            log.exception("Бригады: веб-команды не применены")
+    else:
+        log.error("Бригады: модуль не подключён на этапе make_app")
 
     if DEBUG_ON:
         added = await compat.register_debug(hub.bot, game_manager)
@@ -816,8 +752,7 @@ async def bootstrap(app):
 
     messenger = Messenger(MSG_DB, ACCOUNTS, on_message)
     await _db(messenger.init)
-    summary = await _db(messenger.import_legacy, LEGACY)
-    log.info("Мессенджер: %s", summary)
+    log.info("Мессенджер: %s", await _db(messenger.import_legacy, LEGACY))
     app["messenger"] = messenger
     hub.messenger = messenger
 
@@ -826,6 +761,7 @@ async def bootstrap(app):
     hub.world = world
     APP_HUB["hub"] = hub
     APP_HUB["world"] = world
+    APP_HUB["app"] = app
     app["world_task"] = world.start()
     app["janitor_task"] = spawn(janitor(app), "janitor")
 
@@ -851,9 +787,10 @@ async def bootstrap(app):
     for ip in info["addresses"]:
         tag = "Radmin VPN" if ip.startswith("26.") else "локальная сеть"
         print(f"  {tag:<14} http://{ip}:{PORT}")
-    print(f"  PIN сервера:   {'включён' if PIN else 'выключен (задай WC_PIN для защиты)'}")
+    print(f"  PIN сервера:   {'включён' if PIN else 'выключен (задай WC_PIN)'}")
     print(f"  Админ:         {ADMIN_LOGIN or 'не задан (задай WC_ADMIN)'}")
     print(f"  Debug:         {'ВКЛЮЧЁН' if DEBUG_ON else 'выключен'}")
+    print(f"  Бригады:       {'API активно' if app.get('brigades_ready') else 'НЕ подключены'}")
     print(f"  Команд: {len(COMMANDS)}   БД игры: {os.path.join(BASE, 'metro.db')}")
     print("=" * 62 + "\n")
     if not PIN:
@@ -861,24 +798,19 @@ async def bootstrap(app):
 
 
 async def shutdown(app):
-    """Порядок важен: писатели останавливаются ДО закрытия БД."""
     hub = app.get("hub")
     world = app.get("world")
     if world is not None:
         world.stop()
-
     for key in ("events", "world_task", "janitor_task"):
         t = app.get(key)
         if t is not None and not t.done():
             t.cancel()
-
     with contextlib.suppress(Exception):
         from func.task_board_manager import task_board_manager
         t = getattr(task_board_manager, "_refresh_task", None)
         if t is not None and not t.done():
             t.cancel()
-
-    # финальное сохранение, пока соединение ещё живо
     with contextlib.suppress(Exception):
         from func.game_manager import game_manager
         from database.db import save_player
@@ -886,7 +818,6 @@ async def shutdown(app):
         if players:
             log.info("Финальное сохранение: %d персонажей", len(players))
             await asyncio.gather(*(save_player(p) for p in players), return_exceptions=True)
-
     pending = [t for t in list(BG_TASKS) if not t.done()]
     for t in pending:
         t.cancel()
@@ -894,11 +825,9 @@ async def shutdown(app):
         with contextlib.suppress(Exception):
             await asyncio.wait_for(asyncio.gather(*pending, return_exceptions=True), timeout=5.0)
     BG_TASKS.clear()
-
     if hub is not None:
         hub.sessions.clear()
     APP_HUB.clear()
-
     from database.db import close_db
     await close_db()
 
@@ -907,6 +836,8 @@ def make_app():
     app = web.Application(client_max_size=1 * 1024 * 1024)
     app["hub"] = Hub()
     app["session_of"] = _session
+    app["accounts"] = ACCOUNTS
+    app["hub"]._app = app
     app.on_startup.append(bootstrap)
     app.on_cleanup.append(shutdown)
     app.add_routes([
@@ -926,7 +857,23 @@ def make_app():
         web.static("/static", os.path.join(WEB_DIR, "static")),
         web.static("/sounds", os.path.join(BASE, "server", "sounds")),
     ])
-    map_api.setup(app)
+
+    # маршруты модулей — только здесь, роутер ещё не заморожен
+    try:
+        import map_api
+        app["map_api"] = map_api
+        if hasattr(map_api, "setup"):
+            map_api.setup(app)
+    except Exception:
+        log.exception("Схема метро: маршруты не зарегистрированы")
+
+    try:
+        import brigades
+        app["brigades"] = brigades
+        brigades.setup(app, ACCOUNTS)
+    except Exception:
+        log.exception("Бригады: маршруты не зарегистрированы")
+
     return app
 
 
@@ -936,20 +883,18 @@ async def _serve():
     await runner.setup()
     site = web.TCPSite(runner, HOST, PORT, reuse_address=True)
     await site.start()
-
     stop = asyncio.Event()
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
         with contextlib.suppress(NotImplementedError, AttributeError, ValueError):
             loop.add_signal_handler(sig, stop.set)
-
     try:
         await stop.wait()
     except asyncio.CancelledError:
         pass
     finally:
         with contextlib.suppress(Exception):
-            await runner.cleanup()          # on_cleanup -> shutdown() -> close_db()
+            await runner.cleanup()
 
 
 def main():

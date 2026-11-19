@@ -1,644 +1,897 @@
-/* 44 WHITE CURTAIN — ядро терминала. Шина WC доступна модулю мессенджера. */
-(() => {
-'use strict';
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const LS = 'wc.ui.v2';
+# -*- coding: utf-8 -*-
+"""Веб-сервер игры: LAN/Radmin VPN, аккаунты, WS-синхронизация, мессенджер, бригады."""
+from __future__ import annotations
 
-const S = {
-  ws: null, screens: new Map(), order: [], commands: [], user: null, world: null, lan: null,
-  modal: null, submitting: false, errors: [], history: [], hIdx: -1,
-  acItems: [], acIdx: -1, retry: 800, timer: null, alive: false,
-  cfg: { font: 15, density: 'normal', scan: true, grain: true, motion: true, amb: true, sfx: true, autoref: true }
-};
-const bus = {};
-const WC = {
-  state: S,
-  on(type, fn){ (bus[type] = bus[type] || []).push(fn); },
-  fire(type, data){ (bus[type] || []).forEach(f => { try{ f(data); }catch(e){ console.error(e); } }); },
-  send, toast, sfx, api, esc, md, hhmm, copy,
-  openUrl(url){ window.open(url, '_blank', 'noopener'); }
-};
-window.WC = WC;
+import asyncio
+import contextlib
+import functools
+import hashlib
+import json
+import logging
+import os
+import secrets
+import signal
+import socket
+import sqlite3
+import sys
+import time
 
-/* ---------- настройки ---------- */
-function loadCfg(){ try{ Object.assign(S.cfg, JSON.parse(localStorage.getItem(LS) || '{}')); }catch(e){} }
-function saveCfg(){ try{ localStorage.setItem(LS, JSON.stringify(S.cfg)); }catch(e){} }
-function applyCfg(){
-  const c = S.cfg;
-  document.documentElement.style.setProperty('--fs', c.font + 'px');
-  document.body.dataset.density = c.density;
-  document.body.classList.toggle('no-scan', !c.scan);
-  document.body.classList.toggle('no-grain', !c.grain);
-  document.body.classList.toggle('no-motion', !c.motion);
-  $('#set-font').value = c.font; $('#set-font-v').textContent = c.font;
-  $('#set-density').value = c.density;
-  ['scan','grain','motion','amb','sfx','autoref'].forEach(k => { $('#set-' + k).checked = !!c[k]; });
-  const on = c.sfx || c.amb;
-  const b = $('#sound'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
-  b.firstChild.nodeValue = on ? '🔊' : '🔇';
-  b.title = on ? 'Звук включён' : 'Звук выключен';
-  ambience(on && c.amb);
-}
+from aiohttp import web
 
-/* ---------- звук ---------- */
-const pool = {};
-function sfx(name){
-  if(!S.cfg.sfx) return;
-  try{
-    const a = pool[name] || (pool[name] = new Audio('/sounds/' + name));
-    a.currentTime = 0; a.volume = .5; a.play().catch(()=>{});
-  }catch(e){}
-}
-let AC = null, ambGain = null, ambStarted = false;
-function ambience(on){
-  if(!on){ if(ambGain && AC) ambGain.gain.setTargetAtTime(0, AC.currentTime, .4); return; }
-  try{
-    if(!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
-    if(AC.state === 'suspended') AC.resume().catch(()=>{});
-    if(!ambStarted){
-      const len = AC.sampleRate * 4, buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
-      let last = 0;
-      for(let i = 0; i < len; i++){ const w = Math.random() * 2 - 1; last = (last + .02 * w) / 1.02; d[i] = last * 3.2; }
-      const src = AC.createBufferSource(); src.buffer = buf; src.loop = true;
-      const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 220;
-      const lfo = AC.createOscillator(), lfoG = AC.createGain();
-      lfo.frequency.value = .07; lfoG.gain.value = 60; lfo.connect(lfoG).connect(lp.frequency); lfo.start();
-      ambGain = AC.createGain(); ambGain.gain.value = 0;
-      src.connect(lp).connect(ambGain).connect(AC.destination); src.start();
-      ambStarted = true;
-    }
-    ambGain.gain.setTargetAtTime(.05, AC.currentTime, 1.2);
-  }catch(e){}
-}
+WEB_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE = os.path.dirname(os.path.dirname(WEB_DIR))
+for _p in (BASE, WEB_DIR):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
-/* ---------- утилиты ---------- */
-function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
-  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function md(t){
-  if(!t) return '';
-  let s = esc(t);
-  s = s.replace(/```([\s\S]*?)```/g, (_, x) => '<pre>' + x.replace(/^\n/, '') + '</pre>');
-  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-  s = s.replace(/&lt;(a?):([\w~]{2,32}):(\d{5,25})&gt;/g, (_, a, n, id) =>
-    `<img class="emoji custom" src="https://cdn.discordapp.com/emojis/${id}.${a ? 'gif' : 'png'}?size=48" alt="${n}" data-fallback="◈" loading="lazy">`);
-  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
-  s = s.replace(/__([^_]+)__/g, '<u>$1</u>');
-  s = s.replace(/~~([^~]+)~~/g, '<s>$1</s>');
-  s = s.replace(/^\s*&gt;\s?(.+)$/gm, '<blockquote>$1</blockquote>');
-  return s.replace(/\n/g, '<br>');
-}
+import discord_shim
+discord_shim.install()                      # ДО импорта func.*
+import compat
+compat.install()
+from bridge import Hub, READONLY            # noqa: E402
+from discord_shim import COMMANDS           # noqa: E402
+from messenger import Messenger             # noqa: E402
+from sync import World                      # noqa: E402
 
-document.addEventListener('error', e => {
-  const t = e.target;
-  if(!t || t.tagName !== 'IMG') return;
-  const fb = t.dataset.fallback || '';
-  const holder = t.closest('figure');
-  if(!fb){ if(holder) holder.remove(); else t.remove(); return; }
-  const span = document.createElement('span');
-  span.className = 'img-fallback';
-  span.textContent = fb;
-  t.replaceWith(span);
-}, true);
+ACC_DB = os.path.join(WEB_DIR, "accounts.db")
+MSG_DB = os.path.join(WEB_DIR, "messenger.db")
+LEGACY = os.path.join(BASE, "server", "_legacy", "database.json")
 
-function emojiHTML(c){
-  if(c.emoji_url) return `<img class="emoji custom" src="${esc(c.emoji_url)}" alt="${esc(c.emoji_name || '')}" data-fallback="◈" loading="lazy">`;
-  return c.emoji ? `<span class="emoji">${esc(c.emoji)}</span>` : '';
-}
-function hhmm(ts){ return new Date((ts || Date.now() / 1000) * 1000)
-  .toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); }
-async function api(path, body, method){
-  const opt = { method: method || (body ? 'POST' : 'GET'), headers: {} };
-  if(body){ opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
-  const r = await fetch(path, opt);
-  let d = {}; try{ d = await r.json(); }catch(e){}
-  return { ok: r.ok, status: r.status, d };
-}
-async function copy(text, btn){
-  try{ await navigator.clipboard.writeText(text); }
-  catch(e){
-    const ta = document.createElement('textarea'); ta.value = text; document.body.append(ta);
-    ta.select(); document.execCommand('copy'); ta.remove();
-  }
-  if(btn){ const t = btn.textContent; btn.textContent = 'Скопировано'; setTimeout(() => btn.textContent = t, 1400); }
-}
+COOKIE = "wc_session"
+TOKENS: dict[str, dict] = {}
+ATTEMPTS: dict[str, list[float]] = {}
+REG_ATTEMPTS: dict[str, list[float]] = {}
+SESSION_TTL = 7 * 86400
 
-/* ---------- тосты и журнал ---------- */
-function toast(text, kind = 'info', trace){
-  const el = document.createElement('div');
-  el.className = 'toast ' + kind;
-  el.innerHTML = md(text);
-  if(trace){
-    const d = document.createElement('details');
-    d.innerHTML = '<summary>Трассировка</summary><pre>' + esc(trace) + '</pre>';
-    const cp = document.createElement('button');
-    cp.className = 'btn tiny secondary copy'; cp.type = 'button'; cp.textContent = 'Копировать';
-    cp.onclick = () => copy(trace, cp);
-    d.append(cp); el.append(d);
-  }
-  $('#toasts').append(el);
-  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 250); }, trace ? 14000 : 5200);
-  if(kind === 'error'){ sfx('ding.mp3'); logError(text, trace, 'error'); }
-  else if(kind === 'warn'){ logError(text, trace, 'warn'); }
-  else sfx('ding.mp3');
-  if(S.modal && S.submitting && (kind === 'warn' || kind === 'error')){
-    S.submitting = false; $('#modal-ok').disabled = false; $('#modal-ok').textContent = 'Подтвердить';
-  }
-}
-function logError(text, trace, kind){
-  S.errors.unshift({ text, trace, kind, t: Date.now() });
-  if(S.errors.length > 60) S.errors.pop();
-  renderErrors();
-}
-function renderErrors(){
-  const n = S.errors.length, badge = $('#err-count');
-  badge.textContent = n; badge.classList.toggle('hidden', n === 0);
-  const list = $('#err-list');
-  if(!n){ list.innerHTML = '<div class="err-empty">Ошибок нет. Всё, что сломается на сервере, появится здесь с трассировкой.</div>'; return; }
-  list.innerHTML = S.errors.map(e => `<div class="err-item ${e.kind}">
-    <div class="err-head"><span>${esc(e.text)}</span><time>${new Date(e.t).toLocaleTimeString('ru-RU')}</time></div>
-    ${e.trace ? '<pre>' + esc(e.trace) + '</pre>' : ''}</div>`).join('');
-}
+HOST = os.environ.get("WC_HOST", "0.0.0.0")
+PORT = int(os.environ.get("WC_PORT", "8080"))
+PIN = os.environ.get("WC_PIN", "").strip()
+ADMIN_LOGIN = os.environ.get("WC_ADMIN", "").strip().lower()
+DEBUG_ON = os.environ.get("WC_DEBUG", "0") == "1"
+ALLOW_TOKEN_QUERY = os.environ.get("WC_TOKEN_QUERY", "0") == "1"
 
-/* ---------- HUD ---------- */
-const VMEM = {};
-function measure(v){
-  const s = String(v == null ? '' : v).replace(/\*\*/g, '').trim();
-  const pair = s.match(/(-?\d+(?:[.,]\d+)?)\s*\/\s*(-?\d+(?:[.,]\d+)?)/);
-  if(pair) return { kind:'pair', cur:+pair[1].replace(',', '.'), max:+pair[2].replace(',', '.'), text:s };
-  const pct = s.match(/(-?\d+(?:[.,]\d+)?)\s*%/);
-  if(pct) return { kind:'pct', cur:+pct[1].replace(',', '.'), max:100, text:s };
-  const cnt = s.match(/(-?\d+)\s*(шт|штук|ед|x|×)\b/i);
-  if(cnt) return { kind:'count', count:+cnt[1], text:s };
-  const mins = s.match(/(-?\d+(?:[.,]\d+)?)\s*(мин|минут|минуты|м)\b/i);
-  if(mins) return { kind:'time', cur:+mins[1].replace(',', '.'), text:s };
-  if(/^(нет|не установлен|отсутствует|снят|пусто|—|-)$/i.test(s)) return { kind:'empty', text:s };
-  const bare = s.match(/^(-?\d+(?:[.,]\d+)?)$/);
-  if(bare) return { kind:'bare', cur:+bare[1].replace(',', '.'), text:s };
-  return { kind:'none', text:s };
-}
-function setVital(k, m){
-  const box = document.querySelector(`.vital[data-k="${k}"]`); if(!box) return;
-  const bar = box.querySelector('i'), out = box.querySelector('span');
-  const mem = VMEM[k] || (VMEM[k] = { pct:null, peak:null });
-  let pct = null;
-  if(m.kind === 'pair' && m.max > 0) pct = m.cur / m.max * 100;
-  else if(m.kind === 'pct') pct = m.cur;
-  else if(m.kind === 'empty') pct = 0;
-  else if(m.kind === 'time'){
-    if(mem.peak == null || m.cur > mem.peak) mem.peak = m.cur;
-    pct = mem.peak > 0 ? m.cur / mem.peak * 100 : null;
-  }
-  else if(m.kind === 'bare'){
-    if(k === 'filter'){
-      if(mem.peak == null || m.cur > mem.peak) mem.peak = m.cur;
-      pct = mem.peak > 0 ? m.cur / mem.peak * 100 : null;
-    } else pct = m.cur;
-  }
-  if(pct != null && isFinite(pct)){
-    mem.pct = Math.max(0, Math.min(100, pct));
-    bar.style.width = mem.pct + '%';
-    box.classList.toggle('low', mem.pct < 30 && mem.pct >= 12);
-    box.classList.toggle('crit', mem.pct < 12);
-  }
-  out.textContent = m.text || '—';
-}
-function stockLine(label, value){
-  let dd = document.getElementById('v-filters');
-  if(!dd){
-    const kv = document.querySelector('.kv'); if(!kv) return;
-    const row = document.createElement('div');
-    row.innerHTML = '<dt>Фильтры в рюкзаке</dt><dd id="v-filters">—</dd>';
-    kv.append(row); dd = row.querySelector('dd');
-  }
-  dd.textContent = value;
-}
-function updateHUD(screen){
-  for(const e of (screen.embeds || [])){
-    const filterCands = [];
-    for(const f of (e.fields || [])){
-      const raw = String(f.name || ''), n = raw.toLowerCase(), v = String(f.value || '');
-      const m = measure(v);
-      if(n.includes('здоров')) setVital('hp', m);
-      else if(n.includes('вынослив')) setVital('st', m);
-      else if(n.includes('радиа') || n.includes('фон')) setVital('rad', m);
-      else if(n.includes('фильтр')){
-        let score = 0;
-        if(m.kind === 'pct' || m.kind === 'pair') score += 4;
-        if(m.kind === 'time') score += 3;
-        if(/ресурс|износ|состоян|остат|заряд|время/.test(n)) score += 3;
-        if(m.kind === 'count') score -= 6;
-        if(/запас|рюкзак|инвент|кол-?во|штук|в наличии/.test(n)) score -= 6;
-        if(m.kind === 'empty') score += 1;
-        filterCands.push({ score, m, raw });
-      }
-      else if(n.includes('локац') || n.includes('станц')) $('#station').textContent = v.replace(/\*\*/g, '');
-      else if(n.includes('фракц')) $('#v-faction').textContent = v.replace(/\*\*/g, '');
-      else if(n.includes('никел') || n.includes('деньг') || n.includes('баланс')) $('#v-money').textContent = v.replace(/\*\*/g, '');
-    }
-    if(filterCands.length){
-      filterCands.sort((a, b) => b.score - a.score);
-      const best = filterCands[0];
-      if(best.score > 0 || best.m.kind === 'empty') setVital('filter', best.m);
-      const stock = filterCands.find(x => x.m.kind === 'count');
-      if(stock) stockLine('Фильтры в рюкзаке', stock.m.text);
-    }
-    const d = (e.description || '') + ' ' + (e.title || '');
-    const lvl = d.match(/Уровень:\s*\**\s*(\d+)/i); if(lvl) $('#v-level').textContent = lvl[1];
-    const nm = d.match(/Добро пожаловать,\s*\*\*([^*]+)\*\*/i);
-    if(nm && S.user) $('#who').textContent = nm[1] + (S.user.admin ? ' · admin' : '');
-  }
-}
+RATE_ACTIONS = float(os.environ.get("WC_RATE", "20"))
+RATE_BURST = float(os.environ.get("WC_RATE_BURST", "40"))
+WS_MAX_MSG = 64 * 1024
+LOGIN_LIMIT = 12
+REG_LIMIT = 5
+MAX_IDS = 500
 
-/* ---------- лента ---------- */
-function componentsHTML(view){
-  if(!view) return '';
-  return view.rows.map(row => '<div class="row">' + row.map(c => {
-    if(c.type === 'button'){
-      if(c.url) return `<a class="btn link" href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.label)}</a>`;
-      return `<button type="button" class="btn ${esc(c.style)}" data-view="${esc(view.id)}" data-item="${esc(c.id)}"
-        ${c.disabled ? 'disabled' : ''}>${emojiHTML(c)}${esc(c.label)}</button>`;
-    }
-    if(c.type === 'select'){
-      return `<select class="sel" data-view="${esc(view.id)}" data-item="${esc(c.id)}" ${c.disabled ? 'disabled' : ''}>
-        <option value="">${esc(c.placeholder || 'Выбрать…')}</option>
-        ${c.options.map(o => `<option value="${esc(o.value)}">${o.emoji ? esc(o.emoji) + ' ' : ''}${esc(o.label)}${o.description ? ' — ' + esc(o.description) : ''}</option>`).join('')}
-      </select>`;
-    }
-    return '';
-  }).join('') + '</div>').join('');
-}
-function cardHTML(s){
-  const embeds = (s.embeds || []).map(e => {
-    const col = e.color != null ? '#' + Number(e.color).toString(16).padStart(6, '0') : 'var(--amber)';
-    const author = (e.author && e.author.name)
-      ? `<div class="e-author">${e.author.icon_url ? `<img class="e-avatar" src="${esc(e.author.icon_url)}" alt="" data-fallback="◈" loading="lazy">` : '<i class="e-mark"></i>'}<span>${md(e.author.name)}</span></div>` : '';
-    const thumb = e.thumbnail
-      ? `<figure class="e-thumb"><img src="${esc(e.thumbnail)}" alt="" data-fallback="" loading="lazy"><i class="holo"></i><i class="corner tl"></i><i class="corner br"></i></figure>` : '';
-    const image = e.image
-      ? `<figure class="e-image"><img src="${esc(e.image)}" alt="" data-fallback="" loading="lazy"><i class="holo"></i></figure>` : '';
-    const fields = (e.fields || []).map(f => `<div class="field ${f.inline ? 'inline' : ''}">
-      <div class="f-name">${md(f.name)}</div><div class="f-val">${md(f.value)}</div></div>`).join('');
-    const footer = (e.footer && e.footer.text)
-      ? `<div class="e-footer">${e.footer.icon_url ? `<img class="e-ficon" src="${esc(e.footer.icon_url)}" alt="" data-fallback="·" loading="lazy">` : ''}${md(e.footer.text)}</div>` : '';
-    return `<div class="embed ${thumb ? 'has-thumb' : ''}" style="--accent:${col}">
-      <div class="e-main">${author}
-        ${e.title ? `<div class="e-title">${md(e.title)}</div>` : ''}
-        ${e.description ? `<div class="e-desc">${md(e.description)}</div>` : ''}
-        ${fields ? `<div class="fields">${fields}</div>` : ''}
-        ${image}${footer}</div>${thumb}</div>`;
-  }).join('');
-  return embeds + (s.content ? `<div class="content">${md(s.content)}</div>` : '') + componentsHTML(s.view);
-}
-function render(s){
-  if(!s || !s.id) return;
-  const feed = $('#feed');
-  const nearBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 180;
-  let el = document.getElementById(s.id);
-  if(!el){
-    el = document.createElement('article');
-    el.id = s.id; el.className = 'card' + (s.ephemeral ? ' ephemeral' : '');
-    feed.append(el); S.order.push(s.id);
-    while(S.order.length > 40){ const old = S.order.shift(); document.getElementById(old)?.remove(); S.screens.delete(old); }
-  }
-  el.dataset.time = hhmm(s.ts);
-  el.innerHTML = cardHTML(s);
-  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-  S.screens.set(s.id, s);
-  updateHUD(s);
-  if(nearBottom) feed.scrollTop = feed.scrollHeight;
-}
-function apply(op){
-  switch(op.op){
-    case 'send': case 'edit': render(op); break;
-    case 'delete': case 'drop':
-      document.getElementById(op.id)?.remove(); S.screens.delete(op.id);
-      S.order = S.order.filter(x => x !== op.id); break;
-    case 'modal': openModal(op); break;
-    case 'modal_close': closeModal(); break;
-    case 'toast': toast(op.text, op.kind || 'info', op.trace); break;
-  }
-  if(S.modal && ['send','edit','delete','drop'].includes(op.op)) closeModal();
-  if(op.op !== 'toast') releasePending();
-}
-function releasePending(){ $$('.btn.pending').forEach(b => { b.classList.remove('pending'); b.disabled = false; }); }
+log = logging.getLogger("web")
+APP_HUB: dict = {}
+LOOP: asyncio.AbstractEventLoop | None = None
+BG_TASKS: set[asyncio.Task] = set()
 
-/* ---------- модалки ---------- */
-function openModal(m){
-  S.modal = m; S.submitting = false;
-  $('#modal-title').textContent = m.title || 'Ввод';
-  const box = $('#modal-fields'); box.innerHTML = '';
-  m.fields.forEach((f, i) => {
-    const wrap = document.createElement('div'); wrap.className = 'mfield'; wrap.dataset.id = f.id;
-    const lab = document.createElement('label');
-    lab.setAttribute('for', 'mf' + i);
-    lab.innerHTML = esc(f.label) + (f.required ? ' <span class="req">*</span>' : '');
-    const inp = document.createElement(f.multiline ? 'textarea' : 'input');
-    inp.id = 'mf' + i; inp.name = f.id; inp.value = f.value || '';
-    if(!f.multiline) inp.type = 'text';
-    if(f.placeholder) inp.placeholder = f.placeholder;
-    if(f.required) inp.required = true;
-    if(f.min) inp.minLength = f.min;
-    if(f.max) inp.maxLength = f.max;
-    inp.autocomplete = 'off';
-    const meta = document.createElement('div'); meta.className = 'meta';
-    meta.innerHTML = `<span class="hint">${f.min ? 'от ' + f.min + ' симв.' : (f.required ? 'обязательно' : 'необязательно')}</span>
-      <span class="count">${(f.value || '').length}${f.max ? ' / ' + f.max : ''}</span>`;
-    const err = document.createElement('div'); err.className = 'err';
-    inp.addEventListener('input', () => {
-      meta.querySelector('.count').textContent = inp.value.length + (f.max ? ' / ' + f.max : '');
-      wrap.classList.remove('bad'); err.textContent = '';
-    });
-    wrap.append(lab, inp, meta, err); box.append(wrap);
-  });
-  $('#modal-ok').disabled = false; $('#modal-ok').textContent = 'Подтвердить';
-  $('#modal-root').classList.remove('hidden');
-  sfx('ding.mp3');
-  setTimeout(() => box.querySelector('input,textarea')?.focus(), 40);
-}
-function closeModal(){
-  S.modal = null; S.submitting = false;
-  $('#modal-root').classList.add('hidden'); $('#modal-fields').innerHTML = '';
-}
-function validateModal(){
-  let ok = true;
-  for(const f of S.modal.fields){
-    const wrap = document.querySelector(`.mfield[data-id="${CSS.escape(f.id)}"]`);
-    const inp = wrap.querySelector('input,textarea'), err = wrap.querySelector('.err');
-    const v = inp.value.trim(); let msg = '';
-    if(f.required && !v) msg = 'Поле обязательно';
-    else if(f.min && v.length < f.min) msg = `Минимум ${f.min} символов`;
-    else if(f.max && v.length > f.max) msg = `Максимум ${f.max} символов`;
-    wrap.classList.toggle('bad', !!msg); err.textContent = msg;
-    if(msg && ok){ inp.focus(); ok = false; }
-  }
-  return ok;
-}
-$('#modal').addEventListener('submit', e => {
-  e.preventDefault();
-  if(!S.modal || S.submitting || !validateModal()) return;
-  const values = {};
-  S.modal.fields.forEach(f => {
-    const el = document.querySelector(`.mfield[data-id="${CSS.escape(f.id)}"] input, .mfield[data-id="${CSS.escape(f.id)}"] textarea`);
-    values[f.id] = el.value;
-  });
-  S.submitting = true; $('#modal-ok').disabled = true; $('#modal-ok').textContent = 'Отправка…';
-  sfx('button.mp3'); send({ type: 'submit', modal: S.modal.id, values });
-  setTimeout(() => { if(S.submitting){ S.submitting = false; $('#modal-ok').disabled = false; $('#modal-ok').textContent = 'Подтвердить'; } }, 9000);
-});
-$('#modal-cancel').onclick = closeModal;
-$('#modal-x').onclick = closeModal;
-$('#modal-root').addEventListener('mousedown', e => { if(e.target === $('#modal-root')) closeModal(); });
 
-/* ---------- ввод игры ---------- */
-$('#feed').addEventListener('click', e => {
-  const b = e.target.closest('button[data-item]'); if(!b || b.disabled) return;
-  b.classList.add('pending'); b.disabled = true; sfx('button.mp3');
-  send({ type: 'click', view: b.dataset.view, item: b.dataset.item });
-  setTimeout(() => { b.classList.remove('pending'); b.disabled = false; }, 9000);
-});
-$('#feed').addEventListener('change', e => {
-  const s = e.target.closest('select[data-item]'); if(!s || !s.value) return;
-  sfx('button.mp3');
-  send({ type: 'click', view: s.dataset.view, item: s.dataset.item, values: [s.value] });
-  s.disabled = true; setTimeout(() => { s.disabled = false; }, 6000);
-});
-function send(o){
-  if(S.ws && S.ws.readyState === 1){ S.ws.send(JSON.stringify(o)); return true; }
-  toast('Нет связи с сервером. Нажми «Связь» или подожди автопереподключения.', 'error');
-  return false;
-}
-function runCommand(raw){
-  const txt = String(raw || '').trim().replace(/^\//, '');
-  if(!txt) return;
-  const parts = txt.split(/\s+/);
-  let name = parts[0], rest = parts.slice(1);
-  const two = parts[0] + ' ' + (parts[1] || '');
-  if(S.commands.some(c => c.name === two)){ name = two; rest = parts.slice(2); }
-  const meta = S.commands.find(c => c.name === name);
-  if(!meta){ toast(`Команда /${name} не найдена. Нажми / чтобы увидеть список.`, 'warn'); return; }
-  const params = {};
-  (meta.params || []).forEach((p, i) => { if(rest[i] !== undefined) params[p] = rest[i]; });
-  if(send({ type: 'command', name, params })){
-    S.history.unshift(txt); S.history = [...new Set(S.history)].slice(0, 40);
-    try{ localStorage.setItem('wc.hist', JSON.stringify(S.history)); }catch(e){}
-    S.hIdx = -1; $('#cmd').value = ''; hideAC(); sfx('button.mp3');
-  }
-}
-function showAC(q){
-  const list = S.commands.filter(c => c.name.startsWith(q.toLowerCase())).slice(0, 9);
-  S.acItems = list; S.acIdx = list.length ? 0 : -1;
-  const box = $('#ac');
-  if(!list.length){ hideAC(); return; }
-  box.innerHTML = list.map((c, i) => `<div class="ac-item ${i === 0 ? 'sel' : ''}" data-i="${i}" role="option">
-    <b>/${esc(c.name)}</b><span>${esc(c.description || '')}</span><em>${(c.params || []).join(' · ')}</em></div>`).join('');
-  box.classList.remove('hidden');
-}
-function hideAC(){ $('#ac').classList.add('hidden'); S.acItems = []; S.acIdx = -1; }
-function moveAC(d){
-  if(!S.acItems.length) return;
-  S.acIdx = (S.acIdx + d + S.acItems.length) % S.acItems.length;
-  $$('.ac-item').forEach((el, i) => el.classList.toggle('sel', i === S.acIdx));
-  $$('.ac-item')[S.acIdx]?.scrollIntoView({ block: 'nearest' });
-}
-function acceptAC(){
-  const c = S.acItems[S.acIdx]; if(!c) return false;
-  $('#cmd').value = c.name + ((c.params || []).length ? ' ' : '');
-  hideAC(); $('#cmd').focus(); return true;
-}
-$('#ac').addEventListener('mousedown', e => {
-  const it = e.target.closest('.ac-item'); if(!it) return;
-  e.preventDefault(); S.acIdx = +it.dataset.i; acceptAC();
-});
-$('#cmd').addEventListener('input', e => {
-  const v = e.target.value.replace(/^\//, '');
-  if(!v || v.includes(' ')) hideAC(); else showAC(v);
-});
-$('#cmd').addEventListener('keydown', e => {
-  if(e.key === 'Enter'){
-    e.preventDefault();
-    if(!$('#ac').classList.contains('hidden') && S.acIdx >= 0 && !e.target.value.includes(' ')){ if(acceptAC()) return; }
-    runCommand(e.target.value);
-  }
-  else if(e.key === 'Tab'){ if(!$('#ac').classList.contains('hidden')){ e.preventDefault(); acceptAC(); } }
-  else if(e.key === 'ArrowDown'){
-    if(!$('#ac').classList.contains('hidden')){ e.preventDefault(); moveAC(1); }
-    else if(S.history.length){ e.preventDefault(); S.hIdx = Math.min(S.hIdx + 1, S.history.length - 1); e.target.value = S.history[S.hIdx] || ''; }
-  }
-  else if(e.key === 'ArrowUp'){
-    if(!$('#ac').classList.contains('hidden')){ e.preventDefault(); moveAC(-1); }
-    else if(S.history.length){ e.preventDefault(); S.hIdx = Math.max(S.hIdx - 1, 0); e.target.value = S.history[S.hIdx] || ''; }
-  }
-  else if(e.key === 'Escape') hideAC();
-});
-$('#cmd-send').onclick = () => runCommand($('#cmd').value);
-$$('.quick button').forEach(b => b.onclick = () => runCommand(b.dataset.cmd));
-$('#force-refresh').onclick = () => { send({ type: 'refresh' }); sfx('button.mp3'); };
+def spawn(coro, name="bg"):
+    t = asyncio.ensure_future(coro)
+    BG_TASKS.add(t)
+    t.add_done_callback(BG_TASKS.discard)
+    return t
 
-/* ---------- мир ---------- */
-function renderWorld(w){
-  S.world = w;
-  const n = (w.online || []).length;
-  $('#sync-text').textContent = n + ' в сети';
-  $('#online-count').textContent = n;
-  const list = $('#online-list');
-  if(!n) list.innerHTML = '<div class="empty">Никого нет в сети</div>';
-  else list.innerHTML = w.online.map(p => `<button class="who-row" type="button" data-id="${p.id}" data-login="${esc(p.login)}">
-      <i class="${p.alive ? 'on' : 'off'}"></i>
-      <span class="who-name">${esc(p.name)}${p.id === w.me.id ? ' (ты)' : ''}</span>
-      <span class="who-loc">${esc(p.location || '—')}</span></button>`).join('');
-  const near = w.nearby || [];
-  $('#nearby-box').classList.toggle('hidden', near.length === 0);
-  $('#nearby-names').textContent = near.map(p => p.name).join(', ');
-  if(w.me && w.me.location && w.me.location !== '—') $('#station').textContent = w.me.location;
-  if(w.server && w.server.addresses && w.server.addresses.length){
-    const ip = w.server.addresses.find(x => x.startsWith('26.')) || w.server.addresses[0];
-    $('#lan-addr').textContent = ip + ':' + w.server.port;
-  }
-  WC.fire('world', w);
-}
-$('#online-list').addEventListener('click', e => {
-  const b = e.target.closest('.who-row'); if(!b) return;
-  const id = +b.dataset.id;
-  if(S.world && id === S.world.me.id) return;
-  WC.fire('open-chat', { id, login: b.dataset.login });
-});
-$('#lan-chip').onclick = e => copy('http://' + $('#lan-addr').textContent, e.currentTarget);
 
-/* ---------- соединение ---------- */
-function net(state, text){ $('#net').className = 'pill ' + state; $('#net-text').textContent = text; }
-function connect(){
-  clearTimeout(S.timer);
-  try{ S.ws?.close(); }catch(e){}
-  net('wait', 'подключение…');
-  const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
-  let ws; try{ ws = new WebSocket(url); }catch(e){ scheduleReconnect(); return; }
-  S.ws = ws;
-  ws.onopen = () => { S.alive = true; S.retry = 800; net('on', 'на связи'); WC.fire('online', true); };
-  ws.onmessage = ev => {
-    let d; try{ d = JSON.parse(ev.data); }catch(e){ return; }
-    if(d.type === 'snapshot'){
-      S.commands = d.commands || []; S.user = d.user || null;
-      $('#feed').innerHTML = ''; S.screens.clear(); S.order = [];
-      $('#who').textContent = (d.user?.name || '—') + (d.user?.admin ? ' · admin' : '');
-      (d.screens || []).forEach(render);
-      WC.fire('ready', d.user);
-    }
-    else if(d.type === 'ops') (d.ops || []).forEach(apply);
-    else if(d.type === 'world') renderWorld(d);
-    else if(d.type === 'toast') toast(d.text, d.kind || 'info', d.trace);
-    else WC.fire(d.type, d);
-  };
-  ws.onerror = () => net('off', 'сбой связи');
-  ws.onclose = () => { S.alive = false; releasePending(); WC.fire('online', false); scheduleReconnect(); };
-}
-function scheduleReconnect(){
-  const sec = Math.round(S.retry / 1000);
-  net('off', 'нет связи · повтор через ' + sec + 'с');
-  clearTimeout(S.timer); S.timer = setTimeout(connect, S.retry);
-  S.retry = Math.min(S.retry * 1.7, 12000);
-}
-$('#reconnect').onclick = () => { S.retry = 800; connect(); };
+# ---------- аккаунты ----------
+@contextlib.contextmanager
+def _con(path):
+    c = sqlite3.connect(path, timeout=10)
+    try:
+        c.row_factory = sqlite3.Row
+        c.execute("PRAGMA journal_mode=WAL")
+        with c:
+            yield c
+    finally:
+        c.close()
 
-/* ---------- вход ---------- */
-let mode = 'login';
-function setMode(m){
-  mode = m;
-  $('#tab-login').classList.toggle('active', m === 'login');
-  $('#tab-reg').classList.toggle('active', m === 'reg');
-  $('#auth-go').textContent = m === 'login' ? 'Войти в тоннель' : 'Создать аккаунт';
-  $('#pw').autocomplete = m === 'login' ? 'current-password' : 'new-password';
-  $('#auth-err').textContent = '';
-}
-$('#tab-login').onclick = () => setMode('login');
-$('#tab-reg').onclick = () => setMode('reg');
-$('#auth-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const body = { login: $('#lg').value.trim(), password: $('#pw').value, pin: $('#pin').value };
-  const btn = $('#auth-go'); btn.disabled = true; btn.textContent = 'Проверка…'; $('#auth-err').textContent = '';
-  try{
-    if(mode === 'reg'){
-      const reg = await api('/api/register', body);
-      if(!reg.ok){ $('#auth-err').textContent = reg.d.error || 'Не удалось создать аккаунт'; return; }
-    }
-    const res = await api('/api/login', body);
-    if(!res.ok){ $('#auth-err').textContent = res.d.error || 'Неверный логин или пароль'; return; }
-    enter();
-  }catch(err){
-    $('#auth-err').textContent = 'Сервер недоступен: ' + err.message;
-  }finally{
-    btn.disabled = false; btn.textContent = mode === 'login' ? 'Войти в тоннель' : 'Создать аккаунт';
-  }
-});
-function enter(){
-  $('#auth').classList.add('hidden'); $('#app').classList.remove('hidden');
-  if(S.cfg.amb) ambience(true);
-  connect(); setTimeout(() => $('#cmd').focus(), 120);
-}
-$('#logout').onclick = async () => {
-  try{ await fetch('/api/logout', { method: 'POST' }); }catch(e){}
-  try{ S.ws?.close(); }catch(e){}
-  location.reload();
-};
 
-/* ---------- панель вида / журнал ---------- */
-$('#set-font').oninput = e => { S.cfg.font = +e.target.value; applyCfg(); saveCfg(); };
-$('#set-density').onchange = e => { S.cfg.density = e.target.value; applyCfg(); saveCfg(); };
-['scan','grain','motion','amb','sfx','autoref'].forEach(k => {
-  $('#set-' + k).onchange = e => { S.cfg[k] = e.target.checked; applyCfg(); saveCfg(); };
-});
-$('#set-reset').onclick = () => {
-  S.cfg = { font: 15, density: 'normal', scan: true, grain: true, motion: true, amb: true, sfx: true, autoref: true };
-  applyCfg(); saveCfg(); toast('Вид терминала сброшен', 'success');
-};
-$('#feed-clear').onclick = () => {
-  $('#feed').innerHTML = ''; S.screens.clear(); S.order = [];
-  toast('Лента очищена. Состояние игры не изменилось — /menu вернёт экран.', 'info');
-};
-$('#sound').onclick = () => {
-  const on = !(S.cfg.sfx || S.cfg.amb);
-  S.cfg.sfx = on; S.cfg.amb = on; applyCfg(); saveCfg();
-  if(on) sfx('button.mp3');
-};
-$('#errors-btn').onclick = () => { $('#drawer').classList.toggle('hidden'); renderErrors(); };
-$('#drawer-x').onclick = () => $('#drawer').classList.add('hidden');
-$('#err-clear').onclick = () => { S.errors = []; renderErrors(); };
-$('#err-copy').onclick = e => copy(S.errors.map(x =>
-  `[${new Date(x.t).toLocaleString('ru-RU')}] ${x.kind}: ${x.text}\n${x.trace || ''}`).join('\n\n'), e.target);
+def init_accounts():
+    with _con(ACC_DB) as c:
+        c.execute("""CREATE TABLE IF NOT EXISTS accounts(
+            id INTEGER PRIMARY KEY AUTOINCREMENT, login TEXT UNIQUE NOT NULL,
+            user_id INTEGER UNIQUE NOT NULL, salt TEXT NOT NULL, phash TEXT NOT NULL,
+            is_admin INTEGER DEFAULT 0, created INTEGER)""")
 
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){
-    if(S.modal) closeModal();
-    else if(!$('#msg').classList.contains('hidden')) WC.fire('close-msg');
-    else if(!$('#drawer').classList.contains('hidden')) $('#drawer').classList.add('hidden');
-    else hideAC();
-  }
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm'){ e.preventDefault(); WC.fire('toggle-msg'); }
-  if(e.key === '/' && document.activeElement !== $('#cmd') && !S.modal &&
-     !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){
-    e.preventDefault(); $('#cmd').focus(); showAC('');
-  }
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); $('#cmd').focus(); showAC(''); }
-});
-document.addEventListener('pointerdown', () => { if(S.cfg.amb) ambience(true); }, { once: true });
-window.addEventListener('online', () => { if(!S.alive && !$('#app').classList.contains('hidden')){ S.retry = 800; connect(); } });
 
-/* ---------- старт ---------- */
-loadCfg();
-try{ S.history = JSON.parse(localStorage.getItem('wc.hist') || '[]'); }catch(e){ S.history = []; }
-applyCfg(); renderErrors();
-(async () => {
-  try{
-    const lan = await api('/api/lan');
-    if(lan.ok){
-      S.lan = lan.d;
-      if(lan.d.pin) $('#pin-fld').classList.remove('hidden');
-      const urls = ['127.0.0.1', ...(lan.d.addresses || [])].map(ip => `http://${ip}:${lan.d.port}`);
-      $('#lan-box').classList.remove('hidden');
-      $('#lan-list').innerHTML = urls.map(u => `<button type="button" class="lan-url" data-u="${esc(u)}">${esc(u)}</button>`).join('');
-      $('#lan-list').onclick = e => { const b = e.target.closest('.lan-url'); if(b) copy(b.dataset.u, b); };
-    }
-  }catch(e){}
-  try{ const r = await fetch('/api/me'); if(r.ok) enter(); }catch(e){}
-})();
-})();
+PBKDF_ROUNDS = 200_000
+
+
+def _hash(pw, salt):
+    return hashlib.pbkdf2_hmac("sha256", pw.encode(), bytes.fromhex(salt), PBKDF_ROUNDS).hex()
+
+
+async def _hash_async(pw, salt):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, _hash, pw, salt)
+
+
+_DUMMY_SALT = secrets.token_hex(16)
+_DUMMY_HASH = _hash("dummy-password-for-timing", _DUMMY_SALT)
+
+
+class Accounts:
+    def _by(self, sql, arg):
+        with _con(ACC_DB) as c:
+            r = c.execute(sql, (arg,)).fetchone()
+        return dict(r) if r else None
+
+    def by_login(self, login):
+        return self._by("SELECT * FROM accounts WHERE login=?", str(login).strip().lower())
+
+    def by_id(self, uid):
+        return self._by("SELECT * FROM accounts WHERE user_id=?", uid)
+
+    def all(self):
+        with _con(ACC_DB) as c:
+            return [dict(r) for r in c.execute("SELECT * FROM accounts ORDER BY login")]
+
+    def directory(self):
+        with _con(ACC_DB) as c:
+            return [dict(r) for r in c.execute("SELECT user_id, login FROM accounts ORDER BY login")]
+
+
+ACCOUNTS = Accounts()
+
+
+async def _db(fn, *a):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, functools.partial(fn, *a))
+
+
+def _throttle(bucket, key, limit, window):
+    now = time.time()
+    hits = [t for t in bucket.get(key, []) if now - t < window]
+    hits.append(now)
+    bucket[key] = hits
+    return len(hits) > limit
+
+
+def auth(request):
+    tok = request.cookies.get(COOKIE)
+    if not tok and ALLOW_TOKEN_QUERY:
+        tok = request.query.get("token")
+    if not tok:
+        return None
+    s = TOKENS.get(tok)
+    if s is None:
+        return None
+    if time.time() - s["ts"] >= SESSION_TTL:
+        TOKENS.pop(tok, None)
+        return None
+    s["ts"] = time.time()
+    return s
+
+
+def _session(request):
+    a = auth(request)
+    return request.app["hub"].session(a["user_id"], a["login"], a["admin"]) if a else None
+
+
+def _need_auth(handler):
+    @functools.wraps(handler)
+    async def wrapped(request):
+        if auth(request) is None:
+            return web.json_response({"error": "Требуется вход"}, status=401)
+        return await handler(request)
+    return wrapped
+
+
+async def _json(request):
+    try:
+        d = await request.json()
+    except Exception:
+        raise web.HTTPBadRequest(text=json.dumps({"error": "Некорректный JSON"}, ensure_ascii=False),
+                                 content_type="application/json")
+    if not isinstance(d, dict):
+        raise web.HTTPBadRequest(text=json.dumps({"error": "Ожидался объект"}, ensure_ascii=False),
+                                 content_type="application/json")
+    return d
+
+
+def _int(value, default=0):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _err(text, status=400):
+    return web.json_response({"error": text}, status=status)
+
+
+# ---------- сеть ----------
+def lan_addresses():
+    ips = set()
+    with contextlib.suppress(Exception):
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            ips.add(info[4][0])
+    with contextlib.suppress(Exception):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.settimeout(0.2)
+            s.connect(("8.8.8.8", 80))
+            ips.add(s.getsockname()[0])
+        finally:
+            s.close()
+    ips.discard("127.0.0.1")
+
+    def rank(ip):
+        if ip.startswith("26."):
+            return 0
+        if ip.startswith(("192.168.", "10.")):
+            return 1
+        if ip.startswith("172.") and 16 <= _int(ip.split(".")[1], 0) <= 31:
+            return 1
+        return 2
+
+    return sorted(ips, key=lambda x: (rank(x), x))
+
+
+def server_info():
+    return {"host": HOST, "port": PORT, "addresses": lan_addresses(), "pin": bool(PIN)}
+
+
+# ---------- auth API ----------
+async def api_register(request):
+    ip = request.remote or "?"
+    if _throttle(REG_ATTEMPTS, ip, REG_LIMIT, 3600):
+        return _err("Слишком много регистраций с этого адреса. Попробуй позже.", 429)
+    d = await _json(request)
+    if PIN and not secrets.compare_digest(str(d.get("pin", "")), PIN):
+        return _err("Неверный PIN сервера", 403)
+    login = str(d.get("login") or "").strip().lower()
+    pw = str(d.get("password") or "")
+    if not 3 <= len(login) <= 32 or not 6 <= len(pw) <= 128:
+        return _err("Логин 3–32 символа, пароль 6–128")
+    if not all(ch.isalnum() or ch in "_-." for ch in login):
+        return _err("Логин: буквы, цифры, _ - .")
+    salt = secrets.token_hex(16)
+    phash = await _hash_async(pw, salt)
+    is_admin = int(bool(ADMIN_LOGIN) and login == ADMIN_LOGIN)
+
+    def insert():
+        with _con(ACC_DB) as c:
+            cur = c.execute(
+                "INSERT INTO accounts(login,user_id,salt,phash,is_admin,created) VALUES(?,?,?,?,?,?)",
+                (login, 0, salt, phash, is_admin, int(time.time())))
+            uid = 900_000_000 + cur.lastrowid
+            c.execute("UPDATE accounts SET user_id=? WHERE id=?", (uid, cur.lastrowid))
+            return uid
+
+    try:
+        uid = await _db(insert)
+    except sqlite3.IntegrityError:
+        return _err("Логин занят", 409)
+    log.info("Новый аккаунт %s (uid=%s, admin=%s)", login, uid, bool(is_admin))
+    return web.json_response({"ok": True})
+
+
+async def api_login(request):
+    ip = request.remote or "?"
+    if _throttle(ATTEMPTS, ip, LOGIN_LIMIT, 60):
+        return _err("Слишком много попыток, подожди минуту", 429)
+    d = await _json(request)
+    if PIN and not secrets.compare_digest(str(d.get("pin", "")), PIN):
+        return _err("Неверный PIN сервера", 403)
+    login = str(d.get("login") or "").strip().lower()
+    pw = str(d.get("password") or "")
+    row = await _db(ACCOUNTS.by_login, login)
+    if row:
+        ok = secrets.compare_digest(row["phash"], await _hash_async(pw, row["salt"]))
+    else:
+        await _hash_async(pw, _DUMMY_SALT)
+        ok = False
+    if not ok:
+        return _err("Неверный логин или пароль", 401)
+    tok = secrets.token_urlsafe(32)
+    TOKENS[tok] = {"user_id": row["user_id"], "login": row["login"],
+                   "admin": bool(row["is_admin"]), "ts": time.time()}
+    r = web.json_response({"ok": True, "login": row["login"],
+                           "admin": bool(row["is_admin"]), "user_id": row["user_id"]})
+    r.set_cookie(COOKIE, tok, httponly=True, samesite="lax", max_age=SESSION_TTL,
+                 path="/", secure=request.scheme == "https")
+    return r
+
+
+async def api_logout(request):
+    a = TOKENS.pop(request.cookies.get(COOKIE), None)
+    if a:
+        await _drop_session(request.app["hub"], a["user_id"], save=True)
+    r = web.json_response({"ok": True})
+    r.del_cookie(COOKIE, path="/")
+    return r
+
+
+async def api_me(request):
+    a = auth(request)
+    if not a:
+        return _err("no auth", 401)
+    return web.json_response({"login": a["login"], "admin": a["admin"], "user_id": a["user_id"]})
+
+
+async def api_lan(request):
+    info = server_info()
+    info["online"] = len(request.app["hub"].online_ids())
+    return web.json_response(info)
+
+
+# ---------- игровой ввод ----------
+class Rate:
+    __slots__ = ("tokens", "ts", "rate", "burst")
+
+    def __init__(self, rate=RATE_ACTIONS, burst=RATE_BURST):
+        self.rate, self.burst, self.tokens, self.ts = rate, burst, burst, time.monotonic()
+
+    def take(self, cost=1.0):
+        now = time.monotonic()
+        self.tokens = min(self.burst, self.tokens + (now - self.ts) * self.rate)
+        self.ts = now
+        if self.tokens < cost:
+            return False
+        self.tokens -= cost
+        return True
+
+
+ADMIN_PREFIXES = ("debug", "admin", "set_channel", "sync", "event_force", "event_toggle")
+
+
+def _allowed(s, name):
+    return not (name.startswith(ADMIN_PREFIXES) and not s.user.guild_permissions.administrator)
+
+
+def _params(raw):
+    if not isinstance(raw, dict):
+        return {}
+    out = {}
+    for k, v in raw.items():
+        if not isinstance(k, str) or len(k) > 64:
+            continue
+        if isinstance(v, (str, int, float, bool)) or v is None:
+            out[k] = str(v)[:512] if isinstance(v, str) else v
+    return out
+
+
+def _values(raw):
+    if not isinstance(raw, list):
+        return []
+    return [str(v)[:512] for v in raw[:25] if isinstance(v, (str, int, float))]
+
+
+async def _dispatch(s, kind, d):
+    if kind == "click":
+        await s.click(d.get("view"), d.get("item"), _values(d.get("values")))
+    elif kind == "submit":
+        vals = d.get("values")
+        vals = {str(k): str(v)[:4000] for k, v in vals.items()} if isinstance(vals, dict) else {}
+        await s.submit(d.get("modal"), vals)
+    elif kind == "refresh":
+        await s.refresh()
+    elif kind == "command":
+        name = str(d.get("name") or "")[:64]
+        if not _allowed(s, name):
+            await s.toast("Недостаточно прав для этой команды.", "warn")
+            await s.flush()
+            return
+        await s.command(name, **_params(d.get("params")))
+
+
+async def _rest(request, kind):
+    s = _session(request)
+    if s is None:
+        return _err("no auth", 401)
+    rate = getattr(s, "_rate", None)
+    if rate is None:
+        rate = s._rate = Rate()
+    if not rate.take():
+        return _err("Слишком часто. Притормози.", 429)
+    d = await _json(request)
+    s.drain()
+    await _dispatch(s, kind, d)
+    return web.json_response({"ops": s.drain()})
+
+
+async def api_click(request): return await _rest(request, "click")
+async def api_submit(request): return await _rest(request, "submit")
+async def api_command(request): return await _rest(request, "command")
+async def api_refresh(request): return await _rest(request, "refresh")
+
+
+# ---------- мессенджер API ----------
+def _msg(request):
+    return request.app["messenger"]
+
+
+@_need_auth
+async def msg_overview(request):
+    s = _session(request)
+    m = _msg(request)
+    data = await _db(m.contacts, s.user.id, request.app["world"].online())
+    data["unread"] = await _db(m.unread, s.user.id)
+    directory = await _db(ACCOUNTS.directory)
+    data["directory"] = [{"id": a["user_id"], "login": a["login"]}
+                         for a in directory if a["user_id"] != s.user.id]
+    data["me"] = {"id": s.user.id, "login": s.user.name}
+    return web.json_response(data)
+
+
+@_need_auth
+async def msg_thread(request):
+    s = _session(request)
+    peer = _int(request.query.get("peer"), 0)
+    if peer <= 0:
+        return _err("Некорректный собеседник")
+    data = await _db(_msg(request).thread, s.user.id, peer)
+    await request.app["world"].push(s, force=True)
+    return web.json_response(data)
+
+
+@_need_auth
+async def msg_send(request):
+    s = _session(request)
+    d = await _json(request)
+    to = d.get("to")
+    if isinstance(to, str):
+        acc = await _db(ACCOUNTS.by_login, to)
+        to = acc["user_id"] if acc else 0
+    to = _int(to, 0)
+    if to <= 0:
+        return _err("Получатель не найден")
+    subject = d.get("subject")
+    subject = str(subject)[:120] if subject is not None else None
+    # письма отключены:kind всегда dm, ядро дополнительно отвергает mail
+    res = await _db(_msg(request).send, s.user.id, to, str(d.get("body") or ""), subject, "dm")
+    return web.json_response(res, status=200 if res.get("ok") else 400)
+
+
+@_need_auth
+async def msg_mail(request):
+    s = _session(request)
+    return web.json_response(await _db(_msg(request).mail, s.user.id))
+
+
+@_need_auth
+async def msg_read(request):
+    s = _session(request)
+    d = await _json(request)
+    ids = d.get("ids")
+    if ids is not None:
+        if not isinstance(ids, list):
+            return _err("ids должен быть списком")
+        ids = [i for i in (_int(x, 0) for x in ids[:MAX_IDS]) if i > 0]
+    peer = _int(d.get("peer"), 0) if d.get("peer") is not None else None
+    kind = d.get("kind")
+    kind = kind if kind in ("dm", "mail", "system") else None
+    res = await _db(_msg(request).mark_read, s.user.id, ids, peer, kind)
+    await request.app["world"].push(s, force=True)
+    return web.json_response(res)
+
+
+@_need_auth
+async def contact_request(request):
+    s = _session(request)
+    d = await _json(request)
+    res = await _db(_msg(request).request, s.user.id, str(d.get("login") or "")[:32])
+    if res.get("ok"):
+        hub = request.app["hub"]
+        peer = res.get("peer")
+        await hub.emit_to(peer, {"type": "contacts"})
+        target = hub.sessions.get(peer)
+        if target is not None:
+            await request.app["world"].push(target, force=True)
+    return web.json_response(res, status=200 if res.get("ok") else 400)
+
+
+def _contact_state(m, owner, peer):
+    with m._con() as c:
+        return m._state(c, owner, peer)
+
+
+async def _contact_action(request, action):
+    s = _session(request)
+    d = await _json(request)
+    peer = _int(d.get("id"), 0)
+    if peer <= 0 or peer == s.user.id:
+        return _err("Некорректный контакт")
+    m = _msg(request)
+    if action == "accept":
+        if await _db(_contact_state, m, s.user.id, peer) != "in":
+            return _err("Заявки от этого игрока нет")
+        res = await _db(m.accept, s.user.id, peer)
+    elif action == "decline":
+        res = await _db(m.decline, s.user.id, peer)
+    elif action == "block":
+        res = await _db(m.block, s.user.id, peer)
+    elif action == "rename":
+        res = await _db(m.rename, s.user.id, peer, str(d.get("alias") or "")[:40])
+    else:
+        return _err("Неизвестное действие")
+    if res.get("ok"):
+        await request.app["hub"].emit_to(peer, {"type": "contacts"})
+    await request.app["world"].push(s, force=True)
+    return web.json_response(res, status=200 if res.get("ok") else 400)
+
+
+@_need_auth
+async def contact_accept(request): return await _contact_action(request, "accept")
+@_need_auth
+async def contact_decline(request): return await _contact_action(request, "decline")
+@_need_auth
+async def contact_block(request): return await _contact_action(request, "block")
+@_need_auth
+async def contact_rename(request): return await _contact_action(request, "rename")
+
+
+# ---------- WebSocket ----------
+WS_TYPES = {"click", "submit", "command", "refresh", "map_move", "typing", "ping"}
+
+
+async def ws_handler(request):
+    a = auth(request)
+    ws = web.WebSocketResponse(heartbeat=25.0, autoping=True,
+                               receive_timeout=90.0, max_msg_size=WS_MAX_MSG)
+    await ws.prepare(request)
+    if a is None:
+        with contextlib.suppress(Exception):
+            await ws.send_json({"type": "toast", "text": "Не авторизован", "kind": "error"})
+            await ws.close(code=4001, message=b"auth required")
+        return ws
+
+    hub = request.app["hub"]
+    world = request.app["world"]
+    s = hub.session(a["user_id"], a["login"], a["admin"])
+    lock = asyncio.Lock()
+    rate = getattr(s, "_rate", None)
+    if rate is None:
+        rate = s._rate = Rate()
+    typing_ts = 0.0
+    map_mod = request.app.get("map_api")
+    map_move = getattr(map_mod, "step_move_locked", None) or getattr(map_mod, "ws_map_move_handler", None)
+
+    async def sink(payload):
+        async with lock:
+            if not ws.closed:
+                await ws.send_json(payload)
+
+    try:
+        s.add_sink(sink)
+        await sink(s.snapshot())
+        await world.push(s, force=True)
+        await world.touch(s.user.id)
+
+        from func.game_manager import game_manager
+        if not s.screens:
+            await s.command("menu" if game_manager.get_player(a["user_id"]) else "start")
+
+        async for msg in ws:
+            if msg.type == web.WSMsgType.ERROR:
+                log.warning("WS error %s: %s", a["login"], ws.exception())
+                break
+            if msg.type != web.WSMsgType.TEXT:
+                continue
+            try:
+                d = json.loads(msg.data)
+            except (ValueError, TypeError):
+                continue
+            if not isinstance(d, dict):
+                continue
+            t = d.get("type")
+            if t not in WS_TYPES:
+                continue
+            if t == "ping":
+                await sink({"type": "pong", "ts": time.time()})
+                continue
+            if t == "typing":
+                now = time.monotonic()
+                if now - typing_ts < 1.5:
+                    continue
+                typing_ts = now
+                peer = _int(d.get("to"), 0)
+                if peer > 0 and await _db(_contact_state, _msg(request), s.user.id, peer) == "ok":
+                    await hub.emit_to(peer, {"type": "typing", "from": s.user.id, "login": s.user.name})
+                continue
+            if not rate.take():
+                await sink({"type": "toast", "text": "Слишком много действий подряд.", "kind": "warn"})
+                continue
+            if t == "map_move":
+                if callable(map_move):
+                    await map_move(s, d)
+                continue
+            await _dispatch(s, t, d)
+    except asyncio.CancelledError:
+        raise
+    except (ConnectionResetError, RuntimeError):
+        log.info("WS оборвался: %s", a["login"])
+    except Exception:
+        log.exception("ws_handler %s", a["login"])
+    finally:
+        s.remove_sink(sink)
+        with contextlib.suppress(Exception):
+            await world.touch(s.user.id)
+        if not s.sinks:
+            spawn(_drop_session(hub, s.user.id, save=True), "drop-session")
+        with contextlib.suppress(Exception):
+            await ws.close()
+    return ws
+
+
+async def _drop_session(hub, uid, save=False):
+    s = hub.sessions.get(uid)
+    if s is None or s.sinks:
+        return
+    if save:
+        with contextlib.suppress(Exception):
+            from func.game_manager import game_manager
+            from database.db import save_player
+            p = game_manager.get_player(uid)
+            if p is not None:
+                await save_player(p)
+    for v in list(s.views.values()):
+        with contextlib.suppress(Exception):
+            v.stop()
+    s.views.clear(); s.modals.clear(); s.screens.clear(); s.order.clear(); s.ops.clear()
+    s.combat_view = None
+    hub.sessions.pop(uid, None)
+    if hub.world is not None:
+        hub.world._hash.pop(uid, None)
+
+
+async def index(request):
+    return web.FileResponse(os.path.join(WEB_DIR, "static", "index.html"))
+
+
+# ---------- доставка сообщений ----------
+def on_message(msg):
+    hub = APP_HUB.get("hub")
+    world = APP_HUB.get("world")
+    if hub is None or world is None:
+        return
+
+    async def deliver():
+        try:
+            await hub.emit_to(msg["recipient"], {"type": "msg", "message": msg})
+            s = hub.sessions.get(msg["recipient"])
+            if s:
+                await world.push(s, force=True)
+            if msg["sender"]:
+                await hub.emit_to(msg["sender"], {"type": "msg_echo", "message": msg})
+        except Exception:
+            log.exception("deliver message %s", msg.get("id"))
+
+    try:
+        running = asyncio.get_running_loop()
+    except RuntimeError:
+        running = None
+    if running is LOOP and LOOP is not None:
+        spawn(deliver(), "deliver")
+    elif LOOP is not None and LOOP.is_running():
+        fut = asyncio.run_coroutine_threadsafe(deliver(), LOOP)
+        fut.add_done_callback(lambda f: f.exception() and log.error("deliver: %s", f.exception()))
+    else:
+        log.warning("Сообщение %s не доставлено: event loop не запущен", msg.get("id"))
+
+
+# ---------- фоновая уборка ----------
+async def janitor(app):
+    hub = app["hub"]
+    while True:
+        try:
+            await asyncio.sleep(60)
+            now = time.time()
+            for tok in [k for k, v in TOKENS.items() if now - v["ts"] >= SESSION_TTL]:
+                TOKENS.pop(tok, None)
+            for bucket, window in ((ATTEMPTS, 60), (REG_ATTEMPTS, 3600)):
+                for ip in list(bucket):
+                    hits = [t for t in bucket[ip] if now - t < window]
+                    if hits:
+                        bucket[ip] = hits
+                    else:
+                        bucket.pop(ip, None)
+            for uid, s in list(hub.sessions.items()):
+                if not s.sinks and now - s.last_seen > 300:
+                    await _drop_session(hub, uid, save=True)
+                if len(s.views) > 64:
+                    for vid in [k for k, v in s.views.items() if v.is_finished()]:
+                        s.views.pop(vid, None)
+                if len(s.modals) > 32:
+                    keep = list(s.modals)[-16:]
+                    s.modals = {k: v for k, v in s.modals.items() if k in keep}
+            with contextlib.suppress(Exception):
+                from func.social.brigade_manager import brigade_manager
+                brigade_manager._cleanup_expired_invites()
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            log.exception("janitor")
+
+
+# ---------- жизненный цикл ----------
+async def bootstrap(app):
+    global LOOP
+    LOOP = asyncio.get_running_loop()
+    os.chdir(BASE)
+
+    await _db(init_accounts)
+    from database.db import init_db
+    from func.game_manager import game_manager
+    from func.commands import setup_commands
+    from func.social_commands import setup_social_commands
+
+    await init_db()
+    await game_manager.load_all_players()
+    game_manager.game_channel = 0
+
+    hub = app["hub"]
+    hub.bot._hub = hub
+    hub._app = app
+    app["accounts"] = ACCOUNTS
+    app["session_of"] = _session
+
+    setup_commands(hub.bot, game_manager)
+    setup_social_commands(hub.bot)
+    compat.HUB = hub
+    compat.bind_loop()
+
+    with contextlib.suppress(Exception):
+        from func.social.brigade_manager import brigade_manager
+        await brigade_manager.load_all()
+
+    if DEBUG_ON:
+        added = await compat.register_debug(hub.bot, game_manager)
+        log.warning("DEBUG включён (WC_DEBUG=1): %s", ", ".join(added) or "нет команд")
+    else:
+        log.info("Debug-команды отключены. Для включения задай WC_DEBUG=1.")
+
+    messenger = Messenger(MSG_DB, ACCOUNTS, on_message)
+    await _db(messenger.init)
+    log.info("Мессенджер: %s", await _db(messenger.import_legacy, LEGACY))
+    app["messenger"] = messenger
+    hub.messenger = messenger
+
+    world = World(hub, messenger, server_info())
+    app["world"] = world
+    hub.world = world
+    APP_HUB["hub"] = hub
+    APP_HUB["world"] = world
+    APP_HUB["app"] = app
+    app["world_task"] = world.start()
+    app["janitor_task"] = spawn(janitor(app), "janitor")
+
+    # карта — совместимо с любой ревизией map_api
+    try:
+        import map_api
+        app["map_api"] = map_api
+        if hasattr(map_api, "setup"):
+            map_api.setup(app)
+    except Exception:
+        log.exception("Схема метро не подключена")
+
+    # бригады
+    try:
+        import brigades
+        brigades.install(app, ACCOUNTS)
+    except Exception:
+        log.exception("Бригады не подключены")
+
+    if os.environ.get("WC_EVENTS") == "1":
+        from func.global_events import run_global_events
+        app["events"] = spawn(run_global_events(hub.bot, game_manager), "global-events")
+
+    if os.environ.get("WC_AUTOSAVE", "1") == "1":
+        from utils.autosave import autosaver
+        autosaver.start(hub.bot, game_manager)
+        app["autosaver"] = autosaver
+
+    try:
+        await compat.start_task_board(hub.bot)
+    except Exception:
+        log.exception("Доска заданий NPC не запущена — квесты у NPC будут недоступны")
+
+    info = server_info()
+    print("\n" + "=" * 62)
+    print("  44 WHITE CURTAIN — сервер запущен")
+    print("=" * 62)
+    print(f"  Локально:      http://127.0.0.1:{PORT}")
+    for ip in info["addresses"]:
+        tag = "Radmin VPN" if ip.startswith("26.") else "локальная сеть"
+        print(f"  {tag:<14} http://{ip}:{PORT}")
+    print(f"  PIN сервера:   {'включён' if PIN else 'выключен (задай WC_PIN)'}")
+    print(f"  Админ:         {ADMIN_LOGIN or 'не задан (задай WC_ADMIN)'}")
+    print(f"  Debug:         {'ВКЛЮЧЁН' if DEBUG_ON else 'выключен'}")
+    print(f"  Команд: {len(COMMANDS)}   БД игры: {os.path.join(BASE, 'metro.db')}")
+    print("=" * 62 + "\n")
+    if not PIN:
+        log.warning("WC_PIN не задан — регистрация открыта всем, кто видит порт.")
+
+
+async def shutdown(app):
+    hub = app.get("hub")
+    world = app.get("world")
+    if world is not None:
+        world.stop()
+    for key in ("events", "world_task", "janitor_task"):
+        t = app.get(key)
+        if t is not None and not t.done():
+            t.cancel()
+    with contextlib.suppress(Exception):
+        from func.task_board_manager import task_board_manager
+        t = getattr(task_board_manager, "_refresh_task", None)
+        if t is not None and not t.done():
+            t.cancel()
+    with contextlib.suppress(Exception):
+        from func.game_manager import game_manager
+        from database.db import save_player
+        players = list(getattr(game_manager, "players", {}).values())
+        if players:
+            log.info("Финальное сохранение: %d персонажей", len(players))
+            await asyncio.gather(*(save_player(p) for p in players), return_exceptions=True)
+    pending = [t for t in list(BG_TASKS) if not t.done()]
+    for t in pending:
+        t.cancel()
+    if pending:
+        with contextlib.suppress(Exception):
+            await asyncio.wait_for(asyncio.gather(*pending, return_exceptions=True), timeout=5.0)
+    BG_TASKS.clear()
+    if hub is not None:
+        hub.sessions.clear()
+    APP_HUB.clear()
+    from database.db import close_db
+    await close_db()
+
+
+def make_app():
+    app = web.Application(client_max_size=1 * 1024 * 1024)
+    app["hub"] = Hub()
+    app["session_of"] = _session
+    app["accounts"] = ACCOUNTS
+    app.on_startup.append(bootstrap)
+    app.on_cleanup.append(shutdown)
+    app.add_routes([
+        web.get("/", index), web.get("/ws", ws_handler),
+        web.post("/api/register", api_register), web.post("/api/login", api_login),
+        web.post("/api/logout", api_logout), web.get("/api/me", api_me), web.get("/api/lan", api_lan),
+        web.post("/api/click", api_click), web.post("/api/submit", api_submit),
+        web.post("/api/command", api_command), web.post("/api/refresh", api_refresh),
+        web.get("/api/msg/overview", msg_overview), web.get("/api/msg/thread", msg_thread),
+        web.post("/api/msg/send", msg_send), web.get("/api/msg/mail", msg_mail),
+        web.post("/api/msg/read", msg_read),
+        web.post("/api/contacts/request", contact_request),
+        web.post("/api/contacts/accept", contact_accept),
+        web.post("/api/contacts/decline", contact_decline),
+        web.post("/api/contacts/block", contact_block),
+        web.post("/api/contacts/rename", contact_rename),
+        web.static("/static", os.path.join(WEB_DIR, "static")),
+        web.static("/sounds", os.path.join(BASE, "server", "sounds")),
+    ])
+    return app
+
+
+async def _serve():
+    app = make_app()
+    runner = web.AppRunner(app, access_log=None, shutdown_timeout=5.0)
+    await runner.setup()
+    site = web.TCPSite(runner, HOST, PORT, reuse_address=True)
+    await site.start()
+    stop = asyncio.Event()
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        with contextlib.suppress(NotImplementedError, AttributeError, ValueError):
+            loop.add_signal_handler(sig, stop.set)
+    try:
+        await stop.wait()
+    except asyncio.CancelledError:
+        pass
+    finally:
+        with contextlib.suppress(Exception):
+            await runner.cleanup()
+
+
+def main():
+    logging.basicConfig(level=logging.INFO,
+                        format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    try:
+        asyncio.run(_serve())
+    except KeyboardInterrupt:
+        print("\nОстановка сервера…")
+    print("Сервер остановлен, БД закрыта.")
+
+
+if __name__ == "__main__":
+    main()

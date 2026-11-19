@@ -8889,3 +8889,363 @@ TypeError: object of type 'Embed' has no len()
 2026-11-17 16:09:42 - metro_bot - INFO - ⚙️ _ActionSubmenu: создан, кнопок=5
 2026-11-17 16:09:43 - metro_bot - INFO - ⚙️ retreat_callback: user=900000002
 2026-11-17 16:09:43 - metro_bot - INFO - Бой завершён (участников: 1)
+2026-11-17 16:58:26 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 16:58:26 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 16:58:26 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 16:58:26 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 16:58:26 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 16:58:26 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 16:58:26 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 16:58:26 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 16:58:26 - metro_bot - INFO - Найдено записей в БД: 1
+2026-11-17 16:58:26 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 16:58:26 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 16:58:26 - metro_bot - INFO - Загружено игроков в память: 1
+2026-11-17 16:58:26 - metro_bot - INFO - Настройка команд...
+2026-11-17 16:58:26 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 16:58:26 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 16:58:26 - metro_bot - INFO - 🐛 Debug-команды зарегистрированы
+2026-11-17 16:58:26 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 16:58:26 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 16:58:26 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 80 минут
+2026-11-17 16:58:26 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 16:58:26 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 16:58:26 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 17:02:50 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 17:04:09 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 17:28:41 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 17:28:41 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 17:28:42 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 17:28:42 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 17:28:42 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 17:28:42 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 17:28:42 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 17:28:42 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 17:28:42 - metro_bot - INFO - Найдено записей в БД: 1
+2026-11-17 17:28:42 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 17:28:42 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 17:28:42 - metro_bot - INFO - Загружено игроков в память: 1
+2026-11-17 17:28:42 - metro_bot - INFO - Настройка команд...
+2026-11-17 17:28:42 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 17:28:42 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 17:28:42 - metro_bot - INFO - 🐛 Debug-команды зарегистрированы
+2026-11-17 17:28:42 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 17:28:42 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 17:28:42 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 58 минут
+2026-11-17 17:28:42 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 17:28:42 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 17:28:42 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 17:28:55 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 17:55:19 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 17:55:19 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 17:55:19 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 17:55:19 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 17:55:19 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 17:55:19 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 17:55:19 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 17:55:19 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 17:55:19 - metro_bot - INFO - Найдено записей в БД: 1
+2026-11-17 17:55:19 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 17:55:19 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 17:55:19 - metro_bot - INFO - Загружено игроков в память: 1
+2026-11-17 17:55:19 - metro_bot - INFO - Настройка команд...
+2026-11-17 17:55:19 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 17:55:19 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 17:55:19 - metro_bot - INFO - 🐛 Debug-команды зарегистрированы
+2026-11-17 17:55:19 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 17:55:19 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 17:55:19 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 56 минут
+2026-11-17 17:55:19 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 17:55:19 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 17:55:19 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 17:55:34 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:47 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:48 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:50 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:51 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:51 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:52 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:53 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:54 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:55 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:55 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:56 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:57 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:58 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:01:58 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:08:13 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 18:08:13 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 18:08:13 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 18:08:13 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 18:08:13 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 18:08:13 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 18:08:13 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 18:08:13 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 18:08:13 - metro_bot - INFO - Найдено записей в БД: 1
+2026-11-17 18:08:13 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 18:08:13 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 18:08:13 - metro_bot - INFO - Загружено игроков в память: 1
+2026-11-17 18:08:13 - metro_bot - INFO - Настройка команд...
+2026-11-17 18:08:13 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 18:08:13 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 18:08:13 - metro_bot - INFO - 🐛 Debug-команды зарегистрированы
+2026-11-17 18:08:13 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 18:08:13 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 18:08:13 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 56 минут
+2026-11-17 18:08:13 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 18:08:13 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 18:08:13 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 18:08:24 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:40:08 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-17 18:40:08 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-17 18:40:08 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-17 18:40:08 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-17 18:40:08 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-17 18:40:08 - metro_bot.func - INFO -    has_station_type: True
+2026-11-17 18:40:08 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-17 18:40:08 - metro_bot.func - INFO -    is_start_station: True
+2026-11-17 18:40:08 - metro_bot - INFO - Найдено записей в БД: 1
+2026-11-17 18:40:08 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-17 18:40:08 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-17 18:40:08 - metro_bot - INFO - Загружено игроков в память: 1
+2026-11-17 18:40:08 - metro_bot - INFO - Настройка команд...
+2026-11-17 18:40:08 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-17 18:40:08 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-17 18:40:08 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-17 18:40:08 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-17 18:40:08 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 70 минут
+2026-11-17 18:40:08 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-17 18:40:08 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-17 18:40:08 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-17 18:40:25 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-17 18:41:41 - metro_bot - INFO - [MOVE] Нажата станция 'аннино' от 900000002
+2026-11-17 18:41:41 - metro_bot - INFO - [MOVE] Вызываю move_player для мопс → аннино
+2026-11-17 18:41:41 - metro_bot - INFO - [MOVE] move_player вернул: 🚇 **мопс** идет от **Бульвар Дмитрия Донского** к **Аннино**...
+
+💀 Мутант!
+⚔️ Бо...
+2026-11-17 18:41:42 - metro_bot - INFO - Бой начат: мопс vs [Упырь], дистанция: medium
+2026-11-17 18:41:42 - metro_bot - INFO - Бой отправлен для мопс (+0 союз.)
+2026-11-17 18:41:47 - metro_bot - INFO - 🔫 shoot_callback: user=900000002
+2026-11-17 18:41:47 - metro_bot - INFO - 🎯 part_callback: part=голова, action_type=shoot
+2026-11-17 18:41:47 - metro_bot - INFO - [COMBAT] _flee check: id=упырь, is_boss=False, is_alive=False
+2026-11-17 18:41:48 - metro_bot - INFO - Бой завершён (участников: 1)
+2026-11-18 14:51:13 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 14:51:13 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 14:51:13 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 14:51:13 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 14:51:13 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 14:51:13 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 14:51:13 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 14:51:13 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 14:51:13 - metro_bot - INFO - Найдено записей в БД: 1
+2026-11-18 14:51:13 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 14:51:13 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-18 14:51:13 - metro_bot - INFO - Загружено игроков в память: 1
+2026-11-18 14:51:13 - metro_bot - INFO - Настройка команд...
+2026-11-18 14:51:13 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 14:51:13 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 14:51:13 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 14:51:13 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 14:51:13 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 67 минут
+2026-11-18 14:51:13 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 14:51:13 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 14:51:13 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 14:51:30 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 14:54:16 - metro_bot - INFO - Команда /start от 900000003
+2026-11-18 14:54:23 - metro_bot - INFO - [KEY] 900000002 создал ключ MTR-3B7L-ZYBM (permanent)
+2026-11-18 14:54:36 - metro_bot - WARNING - [KEY] Игрок 900000003 не смог активировать ключ 'MTR-9EQ5-CZ2O': ❌ Ключ не найден.
+2026-11-18 14:55:09 - metro_bot - INFO - Команда /start от 900000003
+2026-11-18 14:55:11 - metro_bot - INFO - [KEY] Игрок 900000003 активировал ключ 'MTR-3B7L-ZYBM'
+2026-11-18 14:55:29 - metro_bot - INFO - Создан новый игрок Виктор Смальцов (id=900000003)
+2026-11-18 14:55:29 - metro_bot - INFO - Создан новый игрок: Виктор Смальцов
+2026-11-18 15:35:25 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 15:43:52 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 15:43:52 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 15:43:53 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 15:43:53 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 15:43:53 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 15:43:53 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 15:43:53 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 15:43:53 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 15:43:53 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 15:43:53 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 15:43:53 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-18 15:43:53 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 15:43:53 - metro_bot - INFO - Настройка команд...
+2026-11-18 15:43:53 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 15:43:53 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 15:43:53 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 15:43:53 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 15:43:53 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 87 минут
+2026-11-18 15:43:53 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 15:43:53 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 15:43:53 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 15:44:05 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 17:32:37 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 17:32:37 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 17:32:38 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 17:32:38 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 17:32:38 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 17:32:38 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 17:32:38 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 17:32:38 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 17:32:38 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 17:32:38 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 17:32:38 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-18 17:32:38 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 17:32:38 - metro_bot - INFO - Настройка команд...
+2026-11-18 17:32:38 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 17:32:38 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 17:32:38 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 17:32:38 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 17:32:38 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 57 минут
+2026-11-18 17:32:38 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 17:32:38 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 17:32:38 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 17:33:02 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 17:52:32 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 17:52:32 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 17:52:32 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 17:52:32 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 17:52:32 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 17:52:32 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 17:52:32 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 17:52:32 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 17:52:32 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 17:52:32 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 17:52:32 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-18 17:52:32 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 17:52:32 - metro_bot - INFO - Настройка команд...
+2026-11-18 17:52:32 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 17:52:32 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 17:52:32 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 17:52:32 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 17:52:32 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 56 минут
+2026-11-18 17:52:32 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 17:52:32 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 17:52:32 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 17:53:10 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 18:28:14 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 18:28:14 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 18:28:14 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 18:28:14 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 18:28:14 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 18:28:14 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 18:28:14 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 18:28:14 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 18:28:14 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 18:28:14 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 18:28:14 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-18 18:28:14 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 18:28:14 - metro_bot - INFO - Настройка команд...
+2026-11-18 18:28:14 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 18:28:14 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 18:28:14 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 18:28:14 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 18:28:14 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 69 минут
+2026-11-18 18:28:14 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 18:28:14 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 18:28:14 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 18:28:28 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 18:37:12 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 18:37:12 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 18:37:12 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 18:37:12 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 18:37:12 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 18:37:12 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 18:37:12 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 18:37:12 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 18:37:12 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 18:37:12 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 18:37:12 - metro_bot - INFO - [Brigade] Загружено групп: 0
+2026-11-18 18:37:12 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 18:37:12 - metro_bot - INFO - Настройка команд...
+2026-11-18 18:37:12 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 18:37:12 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 18:37:12 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 18:37:12 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 18:37:12 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 73 минут
+2026-11-18 18:37:12 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 18:37:12 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 18:37:12 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 18:38:07 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 18:44:32 - metro_bot - INFO - [Brigade] Создана группа Долг (17449545e35f) лидером 900000002, фракция loners
+2026-11-18 18:44:32 - metro_bot - INFO - [Brigade] мопс создал группу Долг
+2026-11-18 18:45:00 - metro_bot - ERROR - Ошибка в brigade_add: 'str' object has no attribute 'id'
+2026-11-18 18:54:22 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 18:54:22 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 18:54:22 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 18:54:22 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 18:54:22 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 18:54:22 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 18:54:22 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 18:54:22 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 18:54:22 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 18:54:22 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 18:54:22 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-18 18:54:22 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 18:54:22 - metro_bot - INFO - Настройка команд...
+2026-11-18 18:54:22 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 18:54:22 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 18:54:22 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 18:54:22 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-18 18:54:22 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 18:54:22 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 18:54:22 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 67 минут
+2026-11-18 18:54:22 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 18:54:22 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 18:54:22 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 18:55:04 - metro_bot - INFO - Команда /menu от 900000002
+2026-11-18 18:56:09 - metro_bot - INFO - [Brigade] 17449545e35f → no_active
+2026-11-18 18:56:12 - metro_bot - INFO - [Brigade] 17449545e35f → active
+2026-11-18 18:56:14 - metro_bot - INFO - [Brigade] 17449545e35f → no_active
+2026-11-18 18:56:14 - metro_bot - INFO - [Brigade] 17449545e35f → active
+2026-11-18 18:56:14 - metro_bot - INFO - [Brigade] 17449545e35f → no_active
+2026-11-18 18:56:33 - metro_bot - INFO - [Brigade] Приглашение 3a3edbaa05ea: 900000002 → 900000003 в 17449545e35f
+2026-11-18 19:01:55 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 19:01:55 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 19:01:55 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 19:01:55 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 19:01:55 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 19:01:55 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 19:01:55 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 19:01:55 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 19:01:55 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 19:01:55 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 19:01:55 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-18 19:01:55 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 19:01:55 - metro_bot - INFO - Настройка команд...
+2026-11-18 19:01:55 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 19:01:55 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 19:01:55 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 19:01:55 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-18 19:01:55 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 19:01:55 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 19:01:55 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 45 минут
+2026-11-18 19:01:55 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 19:01:55 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 19:01:55 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-18 19:03:00 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-18 19:03:00 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-18 19:03:00 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-18 19:03:00 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-18 19:03:00 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-18 19:03:00 - metro_bot.func - INFO -    has_station_type: True
+2026-11-18 19:03:00 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-18 19:03:00 - metro_bot.func - INFO -    is_start_station: True
+2026-11-18 19:03:00 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-18 19:03:00 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 19:03:00 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-18 19:03:00 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-18 19:03:00 - metro_bot - INFO - Настройка команд...
+2026-11-18 19:03:00 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-18 19:03:00 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-18 19:03:00 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-18 19:03:00 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-18 19:03:00 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-18 19:03:00 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-18 19:03:00 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 55 минут
+2026-11-18 19:03:00 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-18 19:03:00 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-18 19:03:00 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
