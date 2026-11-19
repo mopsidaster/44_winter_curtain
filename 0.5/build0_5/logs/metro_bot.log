@@ -9249,3 +9249,26 @@ TypeError: object of type 'Embed' has no len()
 2026-11-18 19:03:00 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
 2026-11-18 19:03:00 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
 2026-11-18 19:03:00 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
+2026-11-19 12:44:42 - metro_bot - INFO - 🌍 Конфигурация: ENABLED=True, INTERVAL=45-90 мин
+2026-11-19 12:44:42 - metro_bot - INFO - GameManager инициализирован (Билд 0.4.4.7)
+2026-11-19 12:44:42 - metro_bot - INFO - [TRADERS] Загружено независимых торговцев: 2
+2026-11-19 12:44:42 - metro_bot.func - INFO - 🔄 Загрузка модуля func начата
+2026-11-19 12:44:42 - metro_bot.func - INFO - ✅ Модуль func загружен
+2026-11-19 12:44:42 - metro_bot.func - INFO -    has_station_type: True
+2026-11-19 12:44:42 - metro_bot.func - INFO -    is_trade_station: True
+2026-11-19 12:44:42 - metro_bot.func - INFO -    is_start_station: True
+2026-11-19 12:44:42 - metro_bot - INFO - Найдено записей в БД: 2
+2026-11-19 12:44:42 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-19 12:44:42 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-19 12:44:42 - metro_bot - INFO - Загружено игроков в память: 2
+2026-11-19 12:44:42 - metro_bot - INFO - Настройка команд...
+2026-11-19 12:44:42 - metro_bot - INFO - Все команды успешно зарегистрированы
+2026-11-19 12:44:42 - metro_bot - INFO - ✅ Социальные команды (/brigada, /money, /deliver, /trade) зарегистрированы
+2026-11-19 12:44:42 - metro_bot - ERROR - [Brigade] restore faction: attempted relative import beyond top-level package
+2026-11-19 12:44:42 - metro_bot - INFO - [Brigade] Загружено групп: 1
+2026-11-19 12:44:42 - metro_bot - INFO - [TASKS] Запущен фоновый обновлятор заданий
+2026-11-19 12:44:42 - metro_bot - INFO - 🌍 Глобальные ивенты ЗАПУЩЕНЫ (Билд 0.4.5)
+2026-11-19 12:44:42 - metro_bot - INFO - ⏱️ Первый глобальный ивент через 61 минут
+2026-11-19 12:44:42 - metro_bot - INFO - 💾 [AutoSave] Система автосохранения запущена
+2026-11-19 12:44:42 - metro_bot - INFO - [TASKS] Фоновый цикл обновления досок запущен
+2026-11-19 12:44:42 - metro_bot - INFO - [TASKS] Все доски обновлены (6 фракций)
